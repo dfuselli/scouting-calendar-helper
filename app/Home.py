@@ -7,7 +7,6 @@ st.title("Calendari Calcio")
 st.markdown(
     """
     Scegli una delle opzioni dal menu a sinistra:
-    - [Geomap](GeoMap): Mappa geografica.
-    - [Chatbot](Chatbot): Interagisci con il chatbot.
+    - [Calendar]: Visualizza il calendario delle partite.
     """
 )

@@ -1,7 +1,7 @@
 repos:
   # Pre-commit hooks di base (whitespace, EOF, ecc.)
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -13,21 +13,21 @@ repos:
 
   # Ordinamento import con isort
   - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 6.1.0
     hooks:
       - id: isort
         args: ["--profile=black"]
 
   # Ruff - linting e formattazione super veloce
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.3
+    rev: v0.14.0
     hooks:
       - id: ruff
         args: ["--fix"]
 
   # Mypy - controllo statico dei tipi
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.2
+    rev: v1.18.2
     hooks:
       - id: mypy
         additional_dependencies: ["pandas", "openpyxl"]
