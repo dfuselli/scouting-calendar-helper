@@ -1,1 +1,0 @@
-"# scouting-calendar-helper" 

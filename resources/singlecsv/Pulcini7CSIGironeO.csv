@@ -1,0 +1,73 @@
+Data,Squadra Casa,Squadra Ospite,Categoria,Girone,Ora,Indirizzo,Giornata,A/R,Federazione
+13/10/2025,Osio Sopra Rossi,Or.Osio Sotto 16,Pulcini a 7,O,18:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,1,Andata,CSI
+11/10/2025,Atletico Grignano,Osgdalmine Blu,Pulcini a 7,O,15:00,Comunale (Sint) Via Resistenza 24041 Brembate/Grignano,1,Andata,CSI
+11/10/2025,Mariano Calcio,Oriens Brembate,Pulcini a 7,O,14:30,Velodromo Via Tofane 1 24044 Dalmine,1,Andata,CSI
+13/10/2025,Uso Sforzatica,Osio Sopra Bianch,Pulcini a 7,O,18:30,Or.S.Andrea (Sint) Via Colombo 7/A 24044 Dalmine/Sforzatica,1,Andata,CSI
+18/10/2025,Osio Sopra Bianch,Or.Osio Sotto 17,Pulcini a 7,O,14:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,2,Andata,CSI
+18/10/2025,Oriens Brembate,Uso Sforzatica,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via Marconi 24041 Brembate,2,Andata,CSI
+18/10/2025,Osgdalmine Blu,Mariano Calcio,Pulcini a 7,O,15:30,Oratorio (Sintetico) Viale Betelli 1 24044 Dalmine,2,Andata,CSI
+18/10/2025,Or.Osio Sotto 16,Atletico Grignano,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,2,Andata,CSI
+25/10/2025,Atletico Grignano,Osio Sopra Rossi,Pulcini a 7,O,15:00,Comunale (Sint) Via Resistenza 24041 Brembate/Grignano,3,Andata,CSI
+25/10/2025,Mariano Calcio,Or.Osio Sotto 16,Pulcini a 7,O,14:30,Velodromo Via Tofane 1 24044 Dalmine,3,Andata,CSI
+25/10/2025,Uso Sforzatica,Osgdalmine Blu,Pulcini a 7,O,14:30,Or.S.Andrea (Sint) Via Colombo 7/A 24044 Dalmine/Sforzatica,3,Andata,CSI
+25/10/2025,Or.Osio Sotto 17,Oriens Brembate,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,3,Andata,CSI
+01/11/2025,Oriens Brembate,Osio Sopra Bianch,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via Marconi 24041 Brembate,4,Andata,CSI
+01/11/2025,Osgdalmine Blu,Or.Osio Sotto 17,Pulcini a 7,O,15:30,Oratorio (Sintetico) Viale Betelli 1 24044 Dalmine,4,Andata,CSI
+01/11/2025,Or.Osio Sotto 16,Uso Sforzatica,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,4,Andata,CSI
+01/11/2025,Osio Sopra Rossi,Mariano Calcio,Pulcini a 7,O,15:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,4,Andata,CSI
+08/11/2025,Mariano Calcio,Atletico Grignano,Pulcini a 7,O,14:30,Velodromo Via Tofane 1 24044 Dalmine,5,Andata,CSI
+08/11/2025,Uso Sforzatica,Osio Sopra Rossi,Pulcini a 7,O,14:30,Or.S.Andrea (Sint) Via Colombo 7/A 24044 Dalmine/Sforzatica,5,Andata,CSI
+08/11/2025,Or.Osio Sotto 17,Or.Osio Sotto 16,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,5,Andata,CSI
+08/11/2025,Osio Sopra Bianch,Osgdalmine Blu,Pulcini a 7,O,14:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,5,Andata,CSI
+15/11/2025,Osgdalmine Blu,Oriens Brembate,Pulcini a 7,O,15:30,Oratorio (Sintetico) Viale Betelli 1 24044 Dalmine,6,Andata,CSI
+15/11/2025,Or.Osio Sotto 16,Osio Sopra Bianch,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,6,Andata,CSI
+15/11/2025,Osio Sopra Rossi,Or.Osio Sotto 17,Pulcini a 7,O,15:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,6,Andata,CSI
+15/11/2025,Atletico Grignano,Uso Sforzatica,Pulcini a 7,O,15:00,Comunale (Sint) Via Resistenza 24041 Brembate/Grignano,6,Andata,CSI
+22/11/2025,Uso Sforzatica,Mariano Calcio,Pulcini a 7,O,14:30,Or.S.Andrea (Sint) Via Colombo 7/A 24044 Dalmine/Sforzatica,7,Andata,CSI
+22/11/2025,Or.Osio Sotto 17,Atletico Grignano,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,7,Andata,CSI
+22/11/2025,Osio Sopra Bianch,Osio Sopra Rossi,Pulcini a 7,O,14:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,7,Andata,CSI
+22/11/2025,Oriens Brembate,Or.Osio Sotto 16,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via Marconi 24041 Brembate,7,Andata,CSI
+29/11/2025,Or.Osio Sotto 16,Osgdalmine Blu,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,8,Andata,CSI
+29/11/2025,Osio Sopra Rossi,Oriens Brembate,Pulcini a 7,O,15:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,8,Andata,CSI
+29/11/2025,Atletico Grignano,Osio Sopra Bianch,Pulcini a 7,O,15:00,Comunale (Sint) Via Resistenza 24041 Brembate/Grignano,8,Andata,CSI
+29/11/2025,Mariano Calcio,Or.Osio Sotto 17,Pulcini a 7,O,14:30,Velodromo Via Tofane 1 24044 Dalmine,8,Andata,CSI
+06/12/2025,Or.Osio Sotto 17,Uso Sforzatica,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,9,Andata,CSI
+06/12/2025,Osio Sopra Bianch,Mariano Calcio,Pulcini a 7,O,14:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,9,Andata,CSI
+06/12/2025,Oriens Brembate,Atletico Grignano,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via Marconi 24041 Brembate,9,Andata,CSI
+06/12/2025,Osgdalmine Blu,Osio Sopra Rossi,Pulcini a 7,O,15:30,Oratorio (Sintetico) Viale Betelli 1 24044 Dalmine,9,Andata,CSI
+07/02/2026,Or.Osio Sotto 16,Osio Sopra Rossi,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,10,Ritorno,CSI
+07/02/2026,Osgdalmine Blu,Atletico Grignano,Pulcini a 7,O,15:30,Oratorio (Sintetico) Viale Betelli 1 24044 Dalmine,10,Ritorno,CSI
+07/02/2026,Oriens Brembate,Mariano Calcio,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via Marconi 24041 Brembate,10,Ritorno,CSI
+07/02/2026,Osio Sopra Bianch,Uso Sforzatica,Pulcini a 7,O,14:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,10,Ritorno,CSI
+14/02/2026,Or.Osio Sotto 17,Osio Sopra Bianch,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,11,Ritorno,CSI
+14/02/2026,Uso Sforzatica,Oriens Brembate,Pulcini a 7,O,14:30,Or.S.Andrea (Sint) Via Colombo 7/A 24044 Dalmine/Sforzatica,11,Ritorno,CSI
+14/02/2026,Mariano Calcio,Osgdalmine Blu,Pulcini a 7,O,14:30,Velodromo Via Tofane 1 24044 Dalmine,11,Ritorno,CSI
+14/02/2026,Atletico Grignano,Or.Osio Sotto 16,Pulcini a 7,O,15:00,Comunale (Sint) Via Resistenza 24041 Brembate/Grignano,11,Ritorno,CSI
+21/02/2026,Osio Sopra Rossi,Atletico Grignano,Pulcini a 7,O,15:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,12,Ritorno,CSI
+21/02/2026,Or.Osio Sotto 16,Mariano Calcio,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,12,Ritorno,CSI
+21/02/2026,Osgdalmine Blu,Uso Sforzatica,Pulcini a 7,O,15:30,Oratorio (Sintetico) Viale Betelli 1 24044 Dalmine,12,Ritorno,CSI
+21/02/2026,Oriens Brembate,Or.Osio Sotto 17,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via Marconi 24041 Brembate,12,Ritorno,CSI
+28/02/2026,Osio Sopra Bianch,Oriens Brembate,Pulcini a 7,O,14:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,13,Ritorno,CSI
+28/02/2026,Or.Osio Sotto 17,Osgdalmine Blu,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,13,Ritorno,CSI
+28/02/2026,Uso Sforzatica,Or.Osio Sotto 16,Pulcini a 7,O,14:30,Or.S.Andrea (Sint) Via Colombo 7/A 24044 Dalmine/Sforzatica,13,Ritorno,CSI
+28/02/2026,Mariano Calcio,Osio Sopra Rossi,Pulcini a 7,O,14:30,Velodromo Via Tofane 1 24044 Dalmine,13,Ritorno,CSI
+07/03/2026,Atletico Grignano,Mariano Calcio,Pulcini a 7,O,15:00,Comunale (Sint) Via Resistenza 24041 Brembate/Grignano,14,Ritorno,CSI
+07/03/2026,Osio Sopra Rossi,Uso Sforzatica,Pulcini a 7,O,15:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,14,Ritorno,CSI
+07/03/2026,Or.Osio Sotto 16,Or.Osio Sotto 17,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,14,Ritorno,CSI
+07/03/2026,Osgdalmine Blu,Osio Sopra Bianch,Pulcini a 7,O,15:30,Oratorio (Sintetico) Viale Betelli 1 24044 Dalmine,14,Ritorno,CSI
+14/03/2026,Oriens Brembate,Osgdalmine Blu,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via Marconi 24041 Brembate,15,Ritorno,CSI
+14/03/2026,Osio Sopra Bianch,Or.Osio Sotto 16,Pulcini a 7,O,14:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,15,Ritorno,CSI
+14/03/2026,Or.Osio Sotto 17,Osio Sopra Rossi,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,15,Ritorno,CSI
+14/03/2026,Uso Sforzatica,Atletico Grignano,Pulcini a 7,O,14:30,Or.S.Andrea (Sint) Via Colombo 7/A 24044 Dalmine/Sforzatica,15,Ritorno,CSI
+21/03/2026,Mariano Calcio,Uso Sforzatica,Pulcini a 7,O,14:30,Velodromo Via Tofane 1 24044 Dalmine,16,Ritorno,CSI
+21/03/2026,Atletico Grignano,Or.Osio Sotto 17,Pulcini a 7,O,15:00,Comunale (Sint) Via Resistenza 24041 Brembate/Grignano,16,Ritorno,CSI
+21/03/2026,Osio Sopra Rossi,Osio Sopra Bianch,Pulcini a 7,O,15:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,16,Ritorno,CSI
+21/03/2026,Or.Osio Sotto 16,Oriens Brembate,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,16,Ritorno,CSI
+28/03/2026,Osgdalmine Blu,Or.Osio Sotto 16,Pulcini a 7,O,15:30,Oratorio (Sintetico) Viale Betelli 1 24044 Dalmine,17,Ritorno,CSI
+28/03/2026,Oriens Brembate,Osio Sopra Rossi,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via Marconi 24041 Brembate,17,Ritorno,CSI
+28/03/2026,Osio Sopra Bianch,Atletico Grignano,Pulcini a 7,O,14:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,17,Ritorno,CSI
+28/03/2026,Or.Osio Sotto 17,Mariano Calcio,Pulcini a 7,O,14:30,Parrocchiale (Sintetico) Via S Alessandro 3 24046 Osio Sotto,17,Ritorno,CSI
+11/04/2026,Uso Sforzatica,Or.Osio Sotto 17,Pulcini a 7,O,14:30,Or.S.Andrea (Sint) Via Colombo 7/A 24044 Dalmine/Sforzatica,18,Ritorno,CSI
+11/04/2026,Mariano Calcio,Osio Sopra Bianch,Pulcini a 7,O,14:30,Velodromo Via Tofane 1 24044 Dalmine,18,Ritorno,CSI
+11/04/2026,Atletico Grignano,Oriens Brembate,Pulcini a 7,O,15:00,Comunale (Sint) Via Resistenza 24041 Brembate/Grignano,18,Ritorno,CSI
+11/04/2026,Osio Sopra Rossi,Osgdalmine Blu,Pulcini a 7,O,15:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,18,Ritorno,CSI

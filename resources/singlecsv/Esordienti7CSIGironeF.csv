@@ -1,0 +1,92 @@
+Data,Squadra Casa,Squadra Ospite,Categoria,Girone,Ora,Indirizzo Campo,Giornata,A/R,Federazione
+11/10/2025,Atletico Grignano,Medolago 2014,Esordienti a 7,F,16:00,"Comunale (Sint) Via Resistenza 24041 Brembate/Grignano",1,Andata,CSI
+11/10/2025,Oriens Brembate,Or.Bonate Bianchi,Esordienti a 7,F,16:00,"Parrocchiale (Sintetico) Via Marconi 24041 Brembate",1,Andata,CSI
+11/10/2025,AIB,Or.Bonate Rossi,Esordienti a 7,F,15:00,"Parrocchiale Via Manzoni, 24 24040 Chignolo D'Isola",1,Andata,CSI
+11/10/2025,Aurora Terno 15,Villa D'Adda,Esordienti a 7,F,14:30,"Oratorio (Sintetico) Via Milano, 4 24030 Terno D'Isola",1,Andata,CSI
+11/10/2025,Sansone Oratorio,Medolago 2015,Esordienti a 7,F,15:00,"Campo Sportivo A.Stefini Via A.Biffi 24030 Caprino B.Sco",1,Andata,CSI
+18/10/2025,Villa D'Adda,Sansone Oratorio,Esordienti a 7,F,15:30,"Comunale (Erba) Via G. Donizetti, 4 24030 Villa D'Adda",2,Andata,CSI
+18/10/2025,Or.Bonate Rossi,Aurora Terno 15,Esordienti a 7,F,15:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",2,Andata,CSI
+18/10/2025,Or.Bonate Bianchi,AIB,Esordienti a 7,F,16:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",2,Andata,CSI
+18/10/2025,Medolago 2014,Oriens Brembate,Esordienti a 7,F,15:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",2,Andata,CSI
+18/10/2025,Medolago 2015,Atletico Grignano,Esordienti a 7,F,14:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",2,Andata,CSI
+25/10/2025,Oriens Brembate,Atletico Grignano,Esordienti a 7,F,16:00,"Parrocchiale (Sintetico) Via Marconi 24041 Brembate",3,Andata,CSI
+25/10/2025,AIB,Medolago 2014,Esordienti a 7,F,15:00,"Parrocchiale Via Manzoni, 24 24040 Chignolo D'Isola",3,Andata,CSI
+25/10/2025,Aurora Terno 15,Or.Bonate Bianchi,Esordienti a 7,F,14:30,"Oratorio (Sintetico) Via Milano, 4 24030 Terno D'Isola",3,Andata,CSI
+25/10/2025,Sansone Oratorio,Or.Bonate Rossi,Esordienti a 7,F,15:00,"Campo Sportivo A.Stefini Via A.Biffi 24030 Caprino B.Sco",3,Andata,CSI
+25/10/2025,Villa D'Adda,Medolago 2015,Esordienti a 7,F,15:30,"Comunale (Erba) Via G. Donizetti, 4 24030 Villa D'Adda",3,Andata,CSI
+01/11/2025,Or.Bonate Rossi,Villa D'Adda,Esordienti a 7,F,15:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",4,Andata,CSI
+01/11/2025,Or.Bonate Bianchi,Sansone Oratorio,Esordienti a 7,F,16:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",4,Andata,CSI
+01/11/2025,Medolago 2014,Aurora Terno 15,Esordienti a 7,F,15:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",4,Andata,CSI
+01/11/2025,Atletico Grignano,AIB,Esordienti a 7,F,16:00,"Comunale (Sint) Via Resistenza 24041 Brembate/Grignano",4,Andata,CSI
+01/11/2025,Medolago 2015,Oriens Brembate,Esordienti a 7,F,14:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",4,Andata,CSI
+08/11/2025,AIB,Oriens Brembate,Esordienti a 7,F,15:00,"Parrocchiale Via Manzoni, 24 24040 Chignolo D'Isola",5,Andata,CSI
+08/11/2025,Aurora Terno 15,Atletico Grignano,Esordienti a 7,F,14:30,"Oratorio (Sintetico) Via Milano, 4 24030 Terno D'Isola",5,Andata,CSI
+08/11/2025,Sansone Oratorio,Medolago 2014,Esordienti a 7,F,15:00,"Campo Sportivo A.Stefini Via A.Biffi 24030 Caprino B.Sco",5,Andata,CSI
+08/11/2025,Villa D'Adda,Or.Bonate Bianchi,Esordienti a 7,F,15:30,"Comunale (Erba) Via G. Donizetti, 4 24030 Villa D'Adda",5,Andata,CSI
+08/11/2025,Or.Bonate Rossi,Medolago 2015,Esordienti a 7,F,15:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",5,Andata,CSI
+15/11/2025,Or.Bonate Bianchi,Or.Bonate Rossi,Esordienti a 7,F,16:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",6,Andata,CSI
+15/11/2025,Medolago 2014,Villa D'Adda,Esordienti a 7,F,15:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",6,Andata,CSI
+15/11/2025,Atletico Grignano,Sansone Oratorio,Esordienti a 7,F,16:00,"Comunale (Sint) Via Resistenza 24041 Brembate/Grignano",6,Andata,CSI
+15/11/2025,Oriens Brembate,Aurora Terno 15,Esordienti a 7,F,16:00,"Parrocchiale (Sintetico) Via Marconi 24041 Brembate",6,Andata,CSI
+15/11/2025,Medolago 2015,AIB,Esordienti a 7,F,14:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",6,Andata,CSI
+22/11/2025,Aurora Terno 15,AIB,Esordienti a 7,F,14:30,"Oratorio (Sintetico) Via Milano, 4 24030 Terno D'Isola",7,Andata,CSI
+22/11/2025,Sansone Oratorio,Oriens Brembate,Esordienti a 7,F,15:00,"Campo Sportivo A.Stefini Via A.Biffi 24030 Caprino B.Sco",7,Andata,CSI
+22/11/2025,Villa D'Adda,Atletico Grignano,Esordienti a 7,F,15:30,"Comunale (Erba) Via G. Donizetti, 4 24030 Villa D'Adda",7,Andata,CSI
+22/11/2025,Or.Bonate Rossi,Medolago 2014,Esordienti a 7,F,15:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",7,Andata,CSI
+22/11/2025,Or.Bonate Bianchi,Medolago 2015,Esordienti a 7,F,16:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",7,Andata,CSI
+29/11/2025,Medolago 2014,Or.Bonate Bianchi,Esordienti a 7,F,15:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",8,Andata,CSI
+29/11/2025,Atletico Grignano,Or.Bonate Rossi,Esordienti a 7,F,16:00,"Comunale (Sint) Via Resistenza 24041 Brembate/Grignano",8,Andata,CSI
+29/11/2025,Oriens Brembate,Villa D'Adda,Esordienti a 7,F,16:00,"Parrocchiale (Sintetico) Via Marconi 24041 Brembate",8,Andata,CSI
+29/11/2025,AIB,Sansone Oratorio,Esordienti a 7,F,15:00,"Parrocchiale Via Manzoni, 24 24040 Chignolo D'Isola",8,Andata,CSI
+29/11/2025,Aurora Terno 15,Medolago 2015,Esordienti a 7,F,14:30,"Oratorio (Sintetico) Via Milano, 4 24030 Terno D'Isola",8,Andata,CSI
+06/12/2025,Sansone Oratorio,Aurora Terno 15,Esordienti a 7,F,15:00,"Campo Sportivo A.Stefini Via A.Biffi 24030 Caprino B.Sco",9,Andata,CSI
+06/12/2025,Villa D'Adda,AIB,Esordienti a 7,F,15:30,"Comunale (Erba) Via G. Donizetti, 4 24030 Villa D'Adda",9,Andata,CSI
+06/12/2025,Or.Bonate Rossi,Oriens Brembate,Esordienti a 7,F,15:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",9,Andata,CSI
+06/12/2025,Or.Bonate Bianchi,Atletico Grignano,Esordienti a 7,F,16:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",9,Andata,CSI
+06/12/2025,Medolago 2015,Medolago 2014,Esordienti a 7,F,14:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",9,Andata,CSI
+07/02/2026,Medolago 2014,Atletico Grignano,Esordienti a 7,F,15:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",1,Ritorno,CSI
+07/02/2026,Or.Bonate Bianchi,Oriens Brembate,Esordienti a 7,F,16:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",1,Ritorno,CSI
+07/02/2026,Or.Bonate Rossi,AIB,Esordienti a 7,F,15:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",1,Ritorno,CSI
+07/02/2026,Villa D'Adda,Aurora Terno 15,Esordienti a 7,F,15:30,"Comunale (Erba) Via G. Donizetti, 4 24030 Villa D'Adda",1,Ritorno,CSI
+07/02/2026,Medolago 2015,Sansone Oratorio,Esordienti a 7,F,14:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",1,Ritorno,CSI
+14/02/2026,Sansone Oratorio,Villa D'Adda,Esordienti a 7,F,15:00,"Campo Sportivo A.Stefini Via A.Biffi 24030 Caprino B.Sco",2,Ritorno,CSI
+14/02/2026,Aurora Terno 15,Or.Bonate Rossi,Esordienti a 7,F,14:30,"Oratorio (Sintetico) Via Milano, 4 24030 Terno D'Isola",2,Ritorno,CSI
+14/02/2026,AIB,Or.Bonate Bianchi,Esordienti a 7,F,15:00,"Parrocchiale Via Manzoni, 24 24040 Chignolo D'Isola",2,Ritorno,CSI
+14/02/2026,Oriens Brembate,Medolago 2014,Esordienti a 7,F,16:00,"Parrocchiale (Sintetico) Via Marconi 24041 Brembate",2,Ritorno,CSI
+14/02/2026,Atletico Grignano,Medolago 2015,Esordienti a 7,F,16:00,"Comunale (Sint) Via Resistenza 24041 Brembate/Grignano",2,Ritorno,CSI
+21/02/2026,Atletico Grignano,Oriens Brembate,Esordienti a 7,F,16:00,"Comunale (Sint) Via Resistenza 24041 Brembate/Grignano",3,Ritorno,CSI
+21/02/2026,Medolago 2014,AIB,Esordienti a 7,F,15:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",3,Ritorno,CSI
+21/02/2026,Or.Bonate Bianchi,Aurora Terno 15,Esordienti a 7,F,16:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",3,Ritorno,CSI
+21/02/2026,Or.Bonate Rossi,Sansone Oratorio,Esordienti a 7,F,15:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",3,Ritorno,CSI
+21/02/2026,Medolago 2015,Villa D'Adda,Esordienti a 7,F,14:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",3,Ritorno,CSI
+28/02/2026,Villa D'Adda,Or.Bonate Rossi,Esordienti a 7,F,15:30,"Comunale (Erba) Via G. Donizetti, 4 24030 Villa D'Adda",4,Ritorno,CSI
+28/02/2026,Sansone Oratorio,Or.Bonate Bianchi,Esordienti a 7,F,15:00,"Campo Sportivo A.Stefini Via A.Biffi 24030 Caprino B.Sco",4,Ritorno,CSI
+28/02/2026,Aurora Terno 15,Medolago 2014,Esordienti a 7,F,14:30,"Oratorio (Sintetico) Via Milano, 4 24030 Terno D'Isola",4,Ritorno,CSI
+28/02/2026,AIB,Atletico Grignano,Esordienti a 7,F,15:00,"Parrocchiale Via Manzoni, 24 24040 Chignolo D'Isola",4,Ritorno,CSI
+28/02/2026,Oriens Brembate,Medolago 2015,Esordienti a 7,F,16:00,"Parrocchiale (Sintetico) Via Marconi 24041 Brembate",4,Ritorno,CSI
+07/03/2026,Oriens Brembate,AIB,Esordienti a 7,F,16:00,"Parrocchiale (Sintetico) Via Marconi 24041 Brembate",5,Ritorno,CSI
+07/03/2026,Atletico Grignano,Aurora Terno 15,Esordienti a 7,F,16:00,"Comunale (Sint) Via Resistenza 24041 Brembate/Grignano",5,Ritorno,CSI
+07/03/2026,Medolago 2014,Sansone Oratorio,Esordienti a 7,F,15:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",5,Ritorno,CSI
+07/03/2026,Or.Bonate Bianchi,Villa D'Adda,Esordienti a 7,F,16:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",5,Ritorno,CSI
+07/03/2026,Medolago 2015,Or.Bonate Rossi,Esordienti a 7,F,14:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",5,Ritorno,CSI
+14/03/2026,Or.Bonate Rossi,Or.Bonate Bianchi,Esordienti a 7,F,15:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",6,Ritorno,CSI
+14/03/2026,Villa D'Adda,Medolago 2014,Esordienti a 7,F,15:30,"Comunale (Erba) Via G. Donizetti, 4 24030 Villa D'Adda",6,Ritorno,CSI
+14/03/2026,Sansone Oratorio,Atletico Grignano,Esordienti a 7,F,15:00,"Campo Sportivo A.Stefini Via A.Biffi 24030 Caprino B.Sco",6,Ritorno,CSI
+14/03/2026,Aurora Terno 15,Oriens Brembate,Esordienti a 7,F,14:30,"Oratorio (Sintetico) Via Milano, 4 24030 Terno D'Isola",6,Ritorno,CSI
+14/03/2026,AIB,Medolago 2015,Esordienti a 7,F,15:00,"Parrocchiale Via Manzoni, 24 24040 Chignolo D'Isola",6,Ritorno,CSI
+21/03/2026,AIB,Aurora Terno 15,Esordienti a 7,F,15:00,"Parrocchiale Via Manzoni, 24 24040 Chignolo D'Isola",7,Ritorno,CSI
+21/03/2026,Oriens Brembate,Sansone Oratorio,Esordienti a 7,F,16:00,"Parrocchiale (Sintetico) Via Marconi 24041 Brembate",7,Ritorno,CSI
+21/03/2026,Atletico Grignano,Villa D'Adda,Esordienti a 7,F,16:00,"Comunale (Sint) Via Resistenza 24041 Brembate/Grignano",7,Ritorno,CSI
+21/03/2026,Medolago 2014,Or.Bonate Rossi,Esordienti a 7,F,15:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",7,Ritorno,CSI
+21/03/2026,Medolago 2015,Or.Bonate Bianchi,Esordienti a 7,F,14:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",7,Ritorno,CSI
+28/03/2026,Or.Bonate Bianchi,Medolago 2014,Esordienti a 7,F,16:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",8,Ritorno,CSI
+28/03/2026,Or.Bonate Rossi,Atletico Grignano,Esordienti a 7,F,15:00,"Oratorio (Sintetico) Via Papa Giovanni,3 24040 Bonate Sopra",8,Ritorno,CSI
+28/03/2026,Villa D'Adda,Oriens Brembate,Esordienti a 7,F,15:30,"Comunale (Erba) Via G. Donizetti, 4 24030 Villa D'Adda",8,Ritorno,CSI
+28/03/2026,Sansone Oratorio,AIB,Esordienti a 7,F,15:00,"Campo Sportivo A.Stefini Via A.Biffi 24030 Caprino B.Sco",8,Ritorno,CSI
+28/03/2026,Medolago 2015,Aurora Terno 15,Esordienti a 7,F,14:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",8,Ritorno,CSI
+11/04/2026,Aurora Terno 15,Sansone Oratorio,Esordienti a 7,F,14:30,"Oratorio (Sintetico) Via Milano, 4 24030 Terno D'Isola",9,Ritorno,CSI
+11/04/2026,AIB,Villa D'Adda,Esordienti a 7,F,15:00,"Parrocchiale Via Manzoni, 24 24040 Chignolo D'Isola",9,Ritorno,CSI
+11/04/2026,Oriens Brembate,Or.Bonate Rossi,Esordienti a 7,F,16:00,"Parrocchiale (Sintetico) Via Marconi 24041 Brembate",9,Ritorno,CSI
+11/04/2026,Atletico Grignano,Or.Bonate Bianchi,Esordienti a 7,F,16:00,"Comunale (Sint) Via Resistenza 24041 Brembate/Grignano",9,Ritorno,CSI
+11/04/2026,Medolago 2014,Medolago 2015,Esordienti a 7,F,15:30,"Comunale (Sint) Via Laterale Adda, 2 24030 Medolago",9,Ritorno,CSI
+

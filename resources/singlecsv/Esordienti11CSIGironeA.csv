@@ -1,0 +1,57 @@
+Data,Squadra Casa,Squadra Ospite,Categoria,Girone,Ora,Indirizzo Campo,Giornata,A/R,Federazione
+09/10/2025,Sporting Ovz,Pol.Osio Sopra,Esordienti a 11,A,19:00,Oratorio Parcheggio Via Olmo 24049 Verdellino,1,A,CSI
+11/10/2025,Or.Osio Sotto,San Pellegrino,Esordienti a 11,A,16:45,Parrocchiale (Sintetico) Via S. Alessandro 3 24046 Osio Sotto,1,A,CSI
+11/10/2025,Dinamopopieluszko,Or.Stezzano 2006,Esordienti a 11,A,17:00,Comunale 1 Via IV Novembre 25B 24035 Curno,1,A,CSI
+11/10/2025,Pol.Sorisolese,Solzese,Esordienti a 11,A,14:30,Comunale (Sintetico) Via Roccoli 24010 Sorisole,1,A,CSI
+18/10/2025,Solzese,Sporting Ovz,Esordienti a 11,A,14:30,Comunale a 11 Via Rossini 24030 Solza,2,A,CSI
+18/10/2025,Or.Stezzano 2006,Pol.Sorisolese,Esordienti a 11,A,14:30,Parrocchiale (Sintetico) Via Bergamo 15 24040 Stezzano,2,A,CSI
+18/10/2025,San Pellegrino,Dinamopopieluszko,Esordienti a 11,A,15:30,Stadio Quarenghi (Sint) Via B.Belotti 24016 S.Pellegrino Terme,2,A,CSI
+18/10/2025,Pol.Osio Sopra,Or.Osio Sotto,Esordienti a 11,A,15:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,2,A,CSI
+25/10/2025,Dinamopopieluszko,Or.Osio Sotto,Esordienti a 11,A,15:00,Comunale 1 Via IV Novembre 25B 24035 Curno,3,A,CSI
+25/10/2025,Pol.Sorisolese,San Pellegrino,Esordienti a 11,A,14:30,Comunale (Sintetico) Via Roccoli 24010 Sorisole,3,A,CSI
+25/10/2025,Sporting Ovz,Or.Stezzano 2006,Esordienti a 11,A,16:30,Oratorio Parcheggio Via Olmo 24049 Verdellino,3,A,CSI
+25/10/2025,Pol.Osio Sopra,Solzese,Esordienti a 11,A,14:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,3,A,CSI
+01/11/2025,Or.Stezzano 2006,Solzese,Esordienti a 11,A,14:30,Parrocchiale (Sintetico) Via Bergamo 15 24040 Stezzano,4,A,CSI
+01/11/2025,San Pellegrino,Sporting Ovz,Esordienti a 11,A,15:30,Stadio Quarenghi (Sint) Via B.Belotti 24016 S.Pellegrino Terme,4,A,CSI
+01/11/2025,Or.Osio Sotto,Pol.Sorisolese,Esordienti a 11,A,16:00,Parrocchiale (Sintetico) Via S. Alessandro 3 24046 Osio Sotto,4,A,CSI
+01/11/2025,Dinamopopieluszko,Pol.Osio Sopra,Esordienti a 11,A,15:00,Comunale 1 Via IV Novembre 25B 24035 Curno,4,A,CSI
+08/11/2025,Pol.Sorisolese,Dinamopopieluszko,Esordienti a 11,A,14:30,Comunale (Sintetico) Via Roccoli 24010 Sorisole,5,A,CSI
+08/11/2025,Sporting Ovz,Or.Osio Sotto,Esordienti a 11,A,16:30,Oratorio Parcheggio Via Olmo 24049 Verdellino,5,A,CSI
+08/11/2025,Solzese,San Pellegrino,Esordienti a 11,A,14:30,Comunale a 11 Via Rossini 24030 Solza,5,A,CSI
+08/11/2025,Pol.Osio Sopra,Or.Stezzano 2006,Esordienti a 11,A,15:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,5,A,CSI
+15/11/2025,San Pellegrino,Or.Stezzano 2006,Esordienti a 11,A,15:30,Stadio Quarenghi (Sint) Via B.Belotti 24016 S.Pellegrino Terme,6,A,CSI
+15/11/2025,Or.Osio Sotto,Solzese,Esordienti a 11,A,16:00,Parrocchiale (Sintetico) Via S. Alessandro 3 24046 Osio Sotto,6,A,CSI
+15/11/2025,Dinamopopieluszko,Sporting Ovz,Esordienti a 11,A,15:00,Comunale 1 Via IV Novembre 25B 24035 Curno,6,A,CSI
+15/11/2025,Pol.Sorisolese,Pol.Osio Sopra,Esordienti a 11,A,14:30,Comunale (Sintetico) Via Roccoli 24010 Sorisole,6,A,CSI
+22/11/2025,Sporting Ovz,Pol.Sorisolese,Esordienti a 11,A,16:30,Oratorio Parcheggio Via Olmo 24049 Verdellino,7,A,CSI
+22/11/2025,Solzese,Dinamopopieluszko,Esordienti a 11,A,14:30,Comunale a 11 Via Rossini 24030 Solza,7,A,CSI
+22/11/2025,Or.Stezzano 2006,Or.Osio Sotto,Esordienti a 11,A,14:30,Parrocchiale (Sintetico) Via Bergamo 15 24040 Stezzano,7,A,CSI
+22/11/2025,Pol.Osio Sopra,San Pellegrino,Esordienti a 11,A,15:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,7,A,CSI
+07/02/2026,San Pellegrino,Or.Osio Sotto,Esordienti a 11,A,15:30,Stadio Quarenghi (Sint) Via B.Belotti 24016 S.Pellegrino Terme,8,R,CSI
+07/02/2026,Or.Stezzano 2006,Dinamopopieluszko,Esordienti a 11,A,14:30,Parrocchiale (Sintetico) Via Bergamo 15 24040 Stezzano,8,R,CSI
+07/02/2026,Solzese,Pol.Sorisolese,Esordienti a 11,A,14:30,Comunale a 11 Via Rossini 24030 Solza,8,R,CSI
+07/02/2026,Pol.Osio Sopra,Sporting Ovz,Esordienti a 11,A,15:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,8,R,CSI
+14/02/2026,Sporting Ovz,Solzese,Esordienti a 11,A,16:30,Oratorio Parcheggio Via Olmo 24049 Verdellino,9,R,CSI
+14/02/2026,Pol.Sorisolese,Or.Stezzano 2006,Esordienti a 11,A,14:30,Comunale (Sintetico) Via Roccoli 24010 Sorisole,9,R,CSI
+14/02/2026,Dinamopopieluszko,San Pellegrino,Esordienti a 11,A,15:00,Comunale 1 Via IV Novembre 25B 24035 Curno,9,R,CSI
+14/02/2026,Or.Osio Sotto,Pol.Osio Sopra,Esordienti a 11,A,16:00,Parrocchiale (Sintetico) Via S. Alessandro 3 24046 Osio Sotto,9,R,CSI
+21/02/2026,Dinamopopieluszko,Or.Osio Sotto,Esordienti a 11,A,15:00,Comunale 1 Via IV Novembre 25B 24035 Curno,10,R,CSI
+21/02/2026,Pol.Sorisolese,San Pellegrino,Esordienti a 11,A,14:30,Comunale (Sintetico) Via Roccoli 24010 Sorisole,10,R,CSI
+21/02/2026,Sporting Ovz,Or.Stezzano 2006,Esordienti a 11,A,16:30,Oratorio Parcheggio Via Olmo 24049 Verdellino,10,R,CSI
+21/02/2026,Pol.Osio Sopra,Solzese,Esordienti a 11,A,14:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,10,R,CSI
+28/02/2026,Or.Stezzano 2006,Solzese,Esordienti a 11,A,14:30,Parrocchiale (Sintetico) Via Bergamo 15 24040 Stezzano,11,R,CSI
+28/02/2026,San Pellegrino,Sporting Ovz,Esordienti a 11,A,15:30,Stadio Quarenghi (Sint) Via B.Belotti 24016 S.Pellegrino Terme,11,R,CSI
+28/02/2026,Or.Osio Sotto,Pol.Sorisolese,Esordienti a 11,A,16:00,Parrocchiale (Sintetico) Via S. Alessandro 3 24046 Osio Sotto,11,R,CSI
+28/02/2026,Dinamopopieluszko,Pol.Osio Sopra,Esordienti a 11,A,15:00,Comunale 1 Via IV Novembre 25B 24035 Curno,11,R,CSI
+07/03/2026,Pol.Sorisolese,Dinamopopieluszko,Esordienti a 11,A,14:30,Comunale (Sintetico) Via Roccoli 24010 Sorisole,12,R,CSI
+07/03/2026,Sporting Ovz,Or.Osio Sotto,Esordienti a 11,A,16:30,Oratorio Parcheggio Via Olmo 24049 Verdellino,12,R,CSI
+07/03/2026,Solzese,San Pellegrino,Esordienti a 11,A,14:30,Comunale a 11 Via Rossini 24030 Solza,12,R,CSI
+07/03/2026,Pol.Osio Sopra,Or.Stezzano 2006,Esordienti a 11,A,15:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,12,R,CSI
+14/03/2026,San Pellegrino,Or.Stezzano 2006,Esordienti a 11,A,15:30,Stadio Quarenghi (Sint) Via B.Belotti 24016 S.Pellegrino Terme,13,R,CSI
+14/03/2026,Or.Osio Sotto,Solzese,Esordienti a 11,A,16:00,Parrocchiale (Sintetico) Via S. Alessandro 3 24046 Osio Sotto,13,R,CSI
+14/03/2026,Dinamopopieluszko,Sporting Ovz,Esordienti a 11,A,15:00,Comunale 1 Via IV Novembre 25B 24035 Curno,13,R,CSI
+14/03/2026,Pol.Sorisolese,Pol.Osio Sopra,Esordienti a 11,A,14:30,Comunale (Sintetico) Via Roccoli 24010 Sorisole,13,R,CSI
+21/03/2026,Sporting Ovz,Pol.Sorisolese,Esordienti a 11,A,16:30,Oratorio Parcheggio Via Olmo 24049 Verdellino,14,R,CSI
+21/03/2026,Solzese,Dinamopopieluszko,Esordienti a 11,A,14:30,Comunale a 11 Via Rossini 24030 Solza,14,R,CSI
+21/03/2026,Or.Stezzano 2006,Or.Osio Sotto,Esordienti a 11,A,14:30,Parrocchiale (Sintetico) Via Bergamo 15 24040 Stezzano,14,R,CSI
+21/03/2026,Pol.Osio Sopra,San Pellegrino,Esordienti a 11,A,15:30,Comunale Via Leonardo Da Vinci 35 24040 Osio Sopra,14,R,CSI
