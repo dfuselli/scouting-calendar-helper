@@ -30,8 +30,8 @@ def merge_excel_sheets(input_file: str, output_file: str):
 
 
 def main():
-    input_path = "app/resources/AllCalendars.xlsx"   # <-- metti qui il nome del file di input
-    output_path = "app/resources/AllCalendarsUnified.xlsx"
+    input_path = "resources/AllCalendars.xlsx"   # <-- metti qui il nome del file di input
+    output_path = "resources/AllCalendarsUnified.xlsx"
 
     if not os.path.exists(input_path):
         print(f"❌ File non trovato: {input_path}")
