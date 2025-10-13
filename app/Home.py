@@ -8,9 +8,9 @@ uploaded_file = "app/resources/AllCalendarsMerged.xlsx"
 
 st.set_page_config(page_title="Home", layout="wide")
 st.write(
-    "<style>div.block-container{padding-top:2rem;}</style>", unsafe_allow_html=True
+    "<style>div.block-container{padding-top:0.5rem;}</style>", unsafe_allow_html=True
 )
-st.subheader("Partite Settore di Base")
+st.markdown("Partite Settore di Base")
 
 try:
     # Legge il file Excel
