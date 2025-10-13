@@ -27,22 +27,29 @@ try:
 
     # --- FILTRO DATA ---
      # Creiamo due colonne affiancate per i filtri
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns([2, 2, 3, 3])  # 1:1:2 dimension ratio
 
     with col1:
         # Filtro testo generico su Casa e Ospite
-        testo_filtrato = st.text_input("Cerca testo in 'Casa' e 'Ospite' (case insensitive)")
+        testo_filtrato = st.text_input("Cerca per Squadra")
 
     with col2:
         # Filtro data
         min_date = df["Data"].min().date()
         max_date = df["Data"].max().date()
         selected_date_range = st.date_input(
-            "Filtra per Data (intervallo)",
+            "Filtra per intervallo Data",
             value=(min_date, max_date),
             min_value=min_date,
             max_value=max_date,
         )
+    with col3:
+        st.write("Verifica calendari dai siti ufficiali:")
+        btn_col1, btn_col2, btn_col3, btn_col4 = st.columns([1,2,2,2]) 
+        with btn_col2:
+            st.markdown("[CSI](https://live.centrosportivoitaliano.it/25/Lombardia/Bergamo)", unsafe_allow_html=True)
+        with btn_col3:
+            st.markdown("[FIGC](https://www.crlombardia.it/comunicati?q=&page=&content_category_value_id=27&delegazioni%5B%5D=13)", unsafe_allow_html=True)
 
     # Applichiamo i filtri
     if testo_filtrato:
@@ -59,14 +66,14 @@ try:
         df = df[df["Data"].dt.date == selected_date_range]
 
     # Nascondi colonna Indirizzo solo nella visualizzazione
-    columns_to_hide = ["Indirizzo", "A/R", "Girone", "Giornata"]
+    columns_to_hide = ["Indirizzo", "A/R", "Girone", "Giornata", "Federazione"]
     display_df = df.drop(columns=columns_to_hide, errors='ignore')
     display_df["Data"] = display_df["Data"].dt.strftime("%d/%m/%y")
     
     # Recupera indice riga selezionata
     selected_rows = st.session_state.get("match_table", {}).get("selection", {}).get("rows", [])
 
-    col1, col2 = st.columns([7, 2])  # 3:1 dimension ratio
+    col1, col2 = st.columns([7, 3])  # 3:1 dimension ratio
 
     with col1:
         # Mostra il dataframe con selezione abilitata
@@ -76,7 +83,8 @@ try:
             height=600,
             on_select="rerun",
             selection_mode="single-row",
-            key="match_table"
+            key="match_table",
+            hide_index=True
         )
 
     with col2:
@@ -85,7 +93,7 @@ try:
             selected_idx = selected_rows[0]
             dettagli = df.iloc[selected_idx]
             for col, val in dettagli.items():
-                st.write(f"**{col}:** {val}")
+                st.markdown(f"<p style='margin: 2px 0;'><strong>{col}:</strong> {val}</p>", unsafe_allow_html=True)
         else:
             st.write("Seleziona una riga per vedere i dettagli.")
 
