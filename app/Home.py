@@ -31,7 +31,7 @@ try:
 
     with col1:
         # Filtro testo generico su Casa e Ospite
-        testo_filtrato = st.text_input("Cerca per Squadra")
+        testo_filtrato = st.text_input(label="",placeholder="Cerca per Squadra", icon="⚽")
 
     # with col2:
     #     # Filtro data
