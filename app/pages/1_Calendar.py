@@ -7,6 +7,9 @@ from datetime import datetime, timedelta
 uploaded_file = "app/resources/AllCalendarsMerged.xlsx"
 
 st.set_page_config(page_title="Home", layout="wide")
+st.write(
+    "<style>div.block-container{padding-top:2rem;}</style>", unsafe_allow_html=True
+)
 st.subheader("Partite  Non Agonistica")
 
 try:
@@ -20,12 +23,11 @@ try:
     oggi = datetime.today()
     settimana_prossima = oggi + timedelta(days=14)
     df = df[(df["Data"] >= oggi) & (df["Data"] <= settimana_prossima)]
-
     df = df.sort_values(by=["Data", "Casa"], ascending=[True, True])
 
     # --- FILTRO DATA ---
      # Creiamo due colonne affiancate per i filtri
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         # Filtro testo generico su Casa e Ospite
@@ -61,8 +63,31 @@ try:
     display_df = df.drop(columns=columns_to_hide, errors='ignore')
     display_df["Data"] = display_df["Data"].dt.strftime("%d/%m/%y")
     
-    # Display dataframe
-    st.dataframe(display_df)
+    # Recupera indice riga selezionata
+    selected_rows = st.session_state.get("match_table", {}).get("selection", {}).get("rows", [])
+
+    col1, col2 = st.columns([7, 2])  # 3:1 dimension ratio
+
+    with col1:
+        # Mostra il dataframe con selezione abilitata
+        st.dataframe(
+            display_df,
+            width='stretch',
+            height=600,
+            on_select="rerun",
+            selection_mode="single-row",
+            key="match_table"
+        )
+
+    with col2:
+        st.subheader("Dettagli partita")
+        if selected_rows:
+            selected_idx = selected_rows[0]
+            dettagli = df.iloc[selected_idx]
+            for col, val in dettagli.items():
+                st.write(f"**{col}:** {val}")
+        else:
+            st.write("Seleziona una riga per vedere i dettagli.")
 
 except Exception as e:
     st.error(f"Errore nella lettura del file: {e}")
