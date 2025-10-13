@@ -10,7 +10,7 @@ st.set_page_config(page_title="Home", layout="wide")
 st.write(
     "<style>div.block-container{padding-top:2rem;}</style>", unsafe_allow_html=True
 )
-st.subheader("Partite Settore di Base - Prossime 2 settimane")
+st.subheader("Partite Settore di Base")
 
 try:
     # Legge il file Excel
@@ -66,14 +66,16 @@ try:
     # Recupera indice riga selezionata
     selected_rows = st.session_state.get("match_table", {}).get("selection", {}).get("rows", [])
 
-    col1, col2 = st.columns([7, 3])  # 3:1 dimension ratio
+    col1, col2 = st.columns([5, 5])  # 3:1 dimension ratio
 
     with col1:
         # Mostra il dataframe con selezione abilitata
+        ordine_colonne = ["Casa", "Ospite","Categoria", "Ora", "Data"]
+        colonne = [col for col in ordine_colonne if col in display_df.columns]
         st.dataframe(
-            display_df,
+            display_df[colonne],
             width='stretch',
-            height=600,
+            height=350,
             on_select="rerun",
             selection_mode="single-row",
             key="match_table",
@@ -87,11 +89,16 @@ try:
             dettagli = df.iloc[selected_idx]
             for col, val in dettagli.items():
                 st.markdown(f"<p style='margin: 2px 0;'><strong>{col}:</strong> {val}</p>", unsafe_allow_html=True)
+        else:
+            st.write("Seleziona una riga per vedere i dettagli.")
+    
 
-            testo_da_copiare = f'{dettagli["Categoria"]} {dettagli["Federazione"].upper()} \n{dettagli["Casa"]} - {dettagli["Ospite"]}\nGirone {dettagli["Girone"]}\n{dettagli["Ora"]}'
-            st.markdown("---")
-            st.code(testo_da_copiare, language=None)
-            if st.button("Copia e incolla per WhatsApp"):
+    if selected_rows:
+        testo_da_copiare = f'{dettagli["Categoria"]} {dettagli["Federazione"].upper()} \n{dettagli["Casa"]} - {dettagli["Ospite"]}\nGirone {dettagli["Girone"]}\n{dettagli["Ora"]}'
+        st.markdown("---")
+        wa_col1, wa_col2, wa_col3 = st.columns([2, 6, 8]) 
+        with wa_col1:
+            if st.button("Copia per WhatsApp"):
                 st.write(
                     """
                     <script>
@@ -101,9 +108,10 @@ try:
                     unsafe_allow_html=True
                 )
                 st.success("Testo copiato negli appunti!")
-        else:
-            st.write("Seleziona una riga per vedere i dettagli.")
-    
+        with wa_col2:
+            st.code(testo_da_copiare, language=None)
+        
+    st.markdown("---")
     st.write("Verifica calendari dai siti ufficiali:")
     btn_col2, btn_col3, btn_col4 = st.columns([1,1,13]) 
     with btn_col2:
