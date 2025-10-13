@@ -3,3 +3,6 @@
 
 [ui]
 hideTopBar = true
+
+[server]
+runOnSave = true
