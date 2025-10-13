@@ -21,7 +21,7 @@ try:
 
     # ✅ Filtra per i prossimi 7 giorni
     oggi = datetime.today()
-    settimana_prossima = oggi + timedelta(days=14)
+    settimana_prossima = oggi + timedelta(days=7)
     df = df[(df["Data"] >= oggi) & (df["Data"] <= settimana_prossima)]
     df = df.sort_values(by=["Data", "Casa"], ascending=[True, True])
 
@@ -33,16 +33,16 @@ try:
         # Filtro testo generico su Casa e Ospite
         testo_filtrato = st.text_input("Cerca per Squadra")
 
-    with col2:
-        # Filtro data
-        min_date = df["Data"].min().date()
-        max_date = df["Data"].max().date()
-        selected_date_range = st.date_input(
-            "Filtra per intervallo Data",
-            value=(min_date, max_date),
-            min_value=min_date,
-            max_value=max_date,
-        )
+    # with col2:
+    #     # Filtro data
+    #     min_date = df["Data"].min().date()
+    #     max_date = df["Data"].max().date()
+    #     selected_date_range = st.date_input(
+    #         "Filtra per intervallo Data",
+    #         value=(min_date, max_date),
+    #         min_value=min_date,
+    #         max_value=max_date,
+    #     )
 
     # Applichiamo i filtri
     if testo_filtrato:
@@ -50,13 +50,13 @@ try:
         mask_ospite = df["Ospite"].astype(str).str.contains(testo_filtrato, case=False, na=False)
         df = df[mask_casa | mask_ospite]
 
-    if isinstance(selected_date_range, tuple) and len(selected_date_range) == 2:
-        df = df[
-            (df["Data"].dt.date >= selected_date_range[0]) &
-            (df["Data"].dt.date <= selected_date_range[1])
-        ]
-    else:
-        df = df[df["Data"].dt.date == selected_date_range]
+    # if isinstance(selected_date_range, tuple) and len(selected_date_range) == 2:
+    #     df = df[
+    #         (df["Data"].dt.date >= selected_date_range[0]) &
+    #         (df["Data"].dt.date <= selected_date_range[1])
+    #     ]
+    # else:
+    #     df = df[df["Data"].dt.date == selected_date_range]
 
     # Nascondi colonna Indirizzo solo nella visualizzazione
     columns_to_hide = ["Indirizzo", "A/R", "Girone", "Giornata", "Federazione"]
