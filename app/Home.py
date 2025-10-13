@@ -10,7 +10,7 @@ st.set_page_config(page_title="Home", layout="wide")
 st.write(
     "<style>div.block-container{padding-top:2rem;}</style>", unsafe_allow_html=True
 )
-st.subheader("Partite  Non Agonistica")
+st.subheader("Partite Settore di Base - Prossime 2 settimane")
 
 try:
     # Legge il file Excel
@@ -27,7 +27,7 @@ try:
 
     # --- FILTRO DATA ---
      # Creiamo due colonne affiancate per i filtri
-    col1, col2, col3, col4 = st.columns([2, 2, 3, 3])  # 1:1:2 dimension ratio
+    col1, col2, col3 = st.columns([2, 2, 6])  # 1:1:2 dimension ratio
 
     with col1:
         # Filtro testo generico su Casa e Ospite
@@ -43,13 +43,6 @@ try:
             min_value=min_date,
             max_value=max_date,
         )
-    with col3:
-        st.write("Verifica calendari dai siti ufficiali:")
-        btn_col1, btn_col2, btn_col3, btn_col4 = st.columns([1,2,2,2]) 
-        with btn_col2:
-            st.markdown("[CSI](https://live.centrosportivoitaliano.it/25/Lombardia/Bergamo)", unsafe_allow_html=True)
-        with btn_col3:
-            st.markdown("[FIGC](https://www.crlombardia.it/comunicati?q=&page=&content_category_value_id=27&delegazioni%5B%5D=13)", unsafe_allow_html=True)
 
     # Applichiamo i filtri
     if testo_filtrato:
@@ -110,6 +103,14 @@ try:
                 st.success("Testo copiato negli appunti!")
         else:
             st.write("Seleziona una riga per vedere i dettagli.")
+    
+    st.write("Verifica calendari dai siti ufficiali:")
+    btn_col2, btn_col3, btn_col4 = st.columns([1,1,13]) 
+    with btn_col2:
+        st.markdown("[CSI](https://live.centrosportivoitaliano.it/25/Lombardia/Bergamo)", unsafe_allow_html=True)
+    with btn_col3:
+        st.markdown("[FIGC](https://www.crlombardia.it/comunicati?q=&page=&content_category_value_id=27&delegazioni%5B%5D=13)", unsafe_allow_html=True)
+
 
 except Exception as e:
     st.error(f"Errore nella lettura del file: {e}")
