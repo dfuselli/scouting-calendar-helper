@@ -96,23 +96,13 @@ try:
     if selected_rows:
         testo_da_copiare = f'{dettagli["Categoria"]} {dettagli["Federazione"].upper()} \n{dettagli["Casa"]} - {dettagli["Ospite"]}\nGirone {dettagli["Girone"]}\n{dettagli["Ora"]}'
         st.markdown("---")
-        wa_col1, wa_col2, wa_col3 = st.columns([2, 6, 8]) 
+        wa_col1, wa_col2 = st.columns([6, 8]) 
         with wa_col1:
-            if st.button("Copia per WhatsApp"):
-                st.write(
-                    """
-                    <script>
-                    navigator.clipboard.writeText(""" + f'"{testo_da_copiare}"' + """);
-                    </script>
-                    """,
-                    unsafe_allow_html=True
-                )
-                st.success("Testo copiato negli appunti!")
-        with wa_col2:
+            st.markdown("Testo da copiare per inviarlo via WhatsApp")
             st.code(testo_da_copiare, language=None)
         
     st.markdown("---")
-    st.write("Verifica calendari dai siti ufficiali:")
+    st.write("Link per verifica calendari dai siti ufficiali")
     btn_col2, btn_col3, btn_col4 = st.columns([1,1,13]) 
     with btn_col2:
         st.markdown("[CSI](https://live.centrosportivoitaliano.it/25/Lombardia/Bergamo)", unsafe_allow_html=True)
