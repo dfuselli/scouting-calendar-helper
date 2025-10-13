@@ -23,6 +23,20 @@ def merge_excel_sheets(input_file: str, output_file: str):
     for col in combined_df.columns:
         combined_df[col] = combined_df[col].apply(normalize_text)
 
+    # Normalizza la prima colonna come data nel formato DD/MM/YYYY
+    first_col = combined_df.columns[0]
+    try:
+        combined_df[first_col] = pd.to_datetime(
+            combined_df[first_col],
+            dayfirst=True,
+            errors='coerce'  # mette NaT se non riesce a convertire
+        ).dt.strftime('%d/%m/%Y')
+    except Exception as e:
+        print(f"⚠️ Errore nella normalizzazione della colonna data '{first_col}': {e}")
+
+    # Mantiene solo le prime 10 colonne
+    combined_df = combined_df.iloc[:, :10]
+
     # Scrive il risultato in un nuovo file Excel
     combined_df.to_excel(output_file, index=False)
 
@@ -31,7 +45,7 @@ def merge_excel_sheets(input_file: str, output_file: str):
 
 def main():
     input_path = "resources/AllCalendars.xlsx"   # <-- metti qui il nome del file di input
-    output_path = "resources/AllCalendarsUnified.xlsx"
+    output_path = "resources/AllCalendarsMerged.xlsx"
 
     if not os.path.exists(input_path):
         print(f"❌ File non trovato: {input_path}")
