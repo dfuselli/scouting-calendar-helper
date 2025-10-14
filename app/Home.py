@@ -31,7 +31,7 @@ try:
     df = load_excel(uploaded_file)
 
     # Filtri
-    cols = st.columns([4, 3, 2, 12])
+    cols = st.columns([3, 3, 2, 12])
     with cols[0]:
         testo_filtrato = st.text_input("Squadra Casa/Ospite", placeholder="", icon="⚽").strip()
     with cols[1]:
@@ -62,7 +62,7 @@ try:
     # Recupera selezione precedente (se esiste)
     prev_selected_ids = st.session_state.get("selected_ids", set())
 
-    cols = st.columns([5, 5])
+    cols = st.columns([4.5, 6])
     with cols[0]:
         st.dataframe(
             display_df[colonne],
