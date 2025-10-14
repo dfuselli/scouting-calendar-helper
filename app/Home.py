@@ -21,7 +21,7 @@ def load_excel(file_path):
     df = df.sort_values(by=["Data", "Casa"], ascending=[True, True])
     
     # Aggiungi colonna ID univoco per tracciabilità
-    df["ID"] = df.apply(lambda row: f'{row["Data"].strftime("%Y%m%d")}_{row["Ora"]}_{row["Casa"]}_{row["Ospite"]}', axis=1)
+    df["ID"] = df.apply(lambda row: f'{row["Data"].strftime("%Y%m%d")}_{row["Categoria"]}_{row["Casa"]}_{row["Ospite"]}', axis=1)
     return df
 
 try:
@@ -38,24 +38,25 @@ try:
         girone_selezionato = st.selectbox("Girone", options=["Tutti"] + sorted(df["Girone"].dropna().unique()), index=0)
 
     # Applichiamo i filtri
+    df_clone = df.copy()  # evita SettingWithCopyWarning
     if testo_filtrato:
-        mask_casa = df["Casa"].astype(str).str.contains(testo_filtrato, case=False, na=False)
-        mask_ospite = df["Ospite"].astype(str).str.contains(testo_filtrato, case=False, na=False)
-        df = df[mask_casa | mask_ospite]
+        mask_casa = df_clone["Casa"].astype(str).str.contains(testo_filtrato, case=False, na=False)
+        mask_ospite = df_clone["Ospite"].astype(str).str.contains(testo_filtrato, case=False, na=False)
+        df_clone = df_clone[mask_casa | mask_ospite]
     
     if categoria_selezionata != "Tutte":
-        df = df[df["Categoria"] == categoria_selezionata]
+        df_clone = df_clone[df_clone["Categoria"] == categoria_selezionata]
 
     if girone_selezionato != "Tutti":
-        df = df[df["Girone"] == girone_selezionato]
+        df_clone = df_clone[df_clone["Girone"] == girone_selezionato]
 
     # Prepara DataFrame da mostrare
     columns_to_hide = ["Indirizzo", "A/R", "Girone", "Giornata", "Federazione"]
-    display_df = df.drop(columns=columns_to_hide, errors='ignore')
+    display_df = df_clone.drop(columns=columns_to_hide, errors='ignore')
     display_df["Data"] = display_df["Data"].dt.strftime("%d/%m/%y")
     ordine_colonne = ["Ora", "Data", "Casa", "Ospite", "Categoria"]
     colonne = [col for col in ordine_colonne if col in display_df.columns]
-    display_df["ID"] = df["ID"].values  # mantiene ID anche nella vista
+    display_df["ID"] = df_clone["ID"].values  # mantiene ID anche nella vista
 
     # Recupera selezione precedente (se esiste)
     prev_selected_ids = st.session_state.get("selected_ids", set())
@@ -74,19 +75,26 @@ try:
 
     # Rileva righe selezionate nella visualizzazione attuale
     selected_rows = st.session_state.get("match_table", {}).get("selection", {}).get("rows", [])
-    selected_ids = set(display_df.iloc[selected_rows]["ID"]) if selected_rows else set()
+    selected_ids_now  = set(display_df.iloc[selected_rows]["ID"]) if selected_rows else set()
+    # Inizializza lo stato globale
+    if "selected_ids" not in st.session_state:
+        st.session_state["selected_ids"] = set()
+
     # Identifica nuova selezione
-    new_selection = selected_ids - prev_selected_ids
+    new_selection = selected_ids_now  - prev_selected_ids
     if new_selection:
         last_selected_id = list(new_selection)[-1]  # prendi l'ultima "nuova" selezione
         st.session_state["last_selected_id"] = last_selected_id
     else:
         last_selected_id = st.session_state.get("last_selected_id", None)
-    st.session_state["selected_ids"] = selected_ids
+
+    # Accumula selezioni: unisci selezioni precedenti con quelle attuali
+    deselezionati = st.session_state["selected_ids"] - selected_ids_now
+    st.session_state["selected_ids"].update(selected_ids_now)
+    # Rimuovere selezioni deselezionate, devi fare diff:
+    st.session_state["selected_ids"] -= deselezionati
 
     # Filtra df per mostrare dettagli delle righe selezionate
-    righe_selezionate = df[df["ID"].isin(selected_ids)]
-
     with cols[1]:
         st.subheader("Dettagli partita")
         if last_selected_id:
@@ -99,10 +107,16 @@ try:
             st.write("Seleziona una riga per vedere i dettagli.")
 
     # Genera testo WhatsApp
+    righe_selezionate = df[df["ID"].isin(st.session_state["selected_ids"])]
     if not righe_selezionate.empty:
         testo_wa = ""
         for _, row in righe_selezionate.iterrows():
-            blocco = f'{row["Categoria"]} {row["Federazione"].upper()} \n{row["Casa"]} - {row["Ospite"]}\nGirone {row["Girone"]}\n{row["Ora"]}'
+            blocco = (
+                f'{row["Categoria"]} {row["Federazione"].upper()} \n'
+                f'{row["Casa"]} - {row["Ospite"]}\n'
+                f'Girone {row["Girone"]}\n'
+                f'{row["Ora"]}'
+            ) 
             testo_wa += "\n\n" + blocco if testo_wa else blocco
 
         st.markdown("---")
@@ -114,9 +128,9 @@ try:
     st.markdown("---")
     st.write("Link per verifica calendari dai siti ufficiali")
     btn_cols = st.columns([1, 1, 13])
-    with btn_cols[1]:
+    with btn_cols[0]:
         st.markdown("[CSI](https://live.centrosportivoitaliano.it/25/Lombardia/Bergamo)", unsafe_allow_html=True)
-    with btn_cols[2]:
+    with btn_cols[1]:
         st.markdown("[FIGC](https://www.crlombardia.it/comunicati?q=&page=&content_category_value_id=27&delegazioni%5B%5D=13)", unsafe_allow_html=True)
 
 except Exception as e:
