@@ -22,6 +22,8 @@ def load_excel(file_path):
     
     # Aggiungi colonna ID univoco per tracciabilità
     df["ID"] = df.apply(lambda row: f'{row["Data"].strftime("%Y%m%d")}_{row["Categoria"]}_{row["Casa"]}_{row["Ospite"]}', axis=1)
+    df["Time"] = df.apply(lambda row: f'{row["Data"].strftime("%d/%m")} {row["Ora"]}', axis=1)
+
     return df
 
 try:
@@ -31,7 +33,7 @@ try:
     # Filtri
     cols = st.columns([4, 3, 2, 12])
     with cols[0]:
-        testo_filtrato = st.text_input("Squadra Casa/Ospite", placeholder="", icon="⚽")
+        testo_filtrato = st.text_input("Squadra Casa/Ospite", placeholder="", icon="⚽").strip()
     with cols[1]:
         categoria_selezionata = st.selectbox("Categoria", options=["Tutte"] + sorted(df["Categoria"].dropna().unique()), index=0)
     with cols[2]:
@@ -51,10 +53,9 @@ try:
         df_clone = df_clone[df_clone["Girone"] == girone_selezionato]
 
     # Prepara DataFrame da mostrare
-    columns_to_hide = ["Indirizzo", "A/R", "Girone", "Giornata", "Federazione"]
+    columns_to_hide = ["Data","Ora","Indirizzo", "A/R", "Girone", "Giornata", "Federazione"]
     display_df = df_clone.drop(columns=columns_to_hide, errors='ignore')
-    display_df["Data"] = display_df["Data"].dt.strftime("%d/%m/%y")
-    ordine_colonne = ["Ora", "Data", "Casa", "Ospite", "Categoria"]
+    ordine_colonne = ["Time", "Casa", "Ospite", "Categoria"]
     colonne = [col for col in ordine_colonne if col in display_df.columns]
     display_df["ID"] = df_clone["ID"].values  # mantiene ID anche nella vista
 
