@@ -4,48 +4,38 @@ from datetime import datetime, timedelta
 
 # Configura la pagina
 st.set_page_config(page_title="Home", layout="wide")
-st.write(
-    "<style>div.block-container{padding-top:0.5rem;}</style>", unsafe_allow_html=True
-)
+st.write("<style>div.block-container{padding-top:0.5rem;}</style>", unsafe_allow_html=True)
 st.markdown("Partite Settore di Base")
 
 uploaded_file = "app/resources/AllCalendarsMerged.xlsx"
+
 @st.cache_data(ttl="1h")
 def load_excel(file_path):
     df = pd.read_excel(file_path, engine="openpyxl")
     df["Data"] = pd.to_datetime(df["Data"], format="%d/%m/%Y", errors='coerce')
     
-    # ✅ Filtra per i prossimi 7 giorni
+    # Filtra per i prossimi 7 giorni
     oggi = datetime.today()
     settimana_prossima = oggi + timedelta(days=7)
     df = df[(df["Data"] >= oggi) & (df["Data"] <= settimana_prossima)]
     df = df.sort_values(by=["Data", "Casa"], ascending=[True, True])
     
+    # Aggiungi colonna ID univoco per tracciabilità
+    df["ID"] = df.apply(lambda row: f'{row["Data"].strftime("%Y%m%d")}_{row["Ora"]}_{row["Casa"]}_{row["Ospite"]}', axis=1)
     return df
 
 try:
     # Legge il file Excel
     df = load_excel(uploaded_file)
 
-     # Creiamo due colonne affiancate per i filtri
-    cols = st.columns([4, 3, 2, 12])  # 1:1:2 dimension ratio
-
+    # Filtri
+    cols = st.columns([4, 3, 2, 12])
     with cols[0]:
-        testo_filtrato = st.text_input(label="Squadra Casa/Ospite", placeholder="", icon="⚽")
-
+        testo_filtrato = st.text_input("Squadra Casa/Ospite", placeholder="", icon="⚽")
     with cols[1]:
-        categoria_selezionata = st.selectbox(
-            "Categoria",
-            options=["Tutte"] + sorted(df["Categoria"].dropna().unique()),
-            index=0
-        )
-
+        categoria_selezionata = st.selectbox("Categoria", options=["Tutte"] + sorted(df["Categoria"].dropna().unique()), index=0)
     with cols[2]:
-        girone_selezionato = st.selectbox(
-            "Girone",
-            options=["Tutti"] + sorted(df["Girone"].dropna().unique()),
-            index=0
-        )
+        girone_selezionato = st.selectbox("Girone", options=["Tutti"] + sorted(df["Girone"].dropna().unique()), index=0)
 
     # Applichiamo i filtri
     if testo_filtrato:
@@ -59,20 +49,19 @@ try:
     if girone_selezionato != "Tutti":
         df = df[df["Girone"] == girone_selezionato]
 
-    # Nascondi colonna Indirizzo solo nella visualizzazione
+    # Prepara DataFrame da mostrare
     columns_to_hide = ["Indirizzo", "A/R", "Girone", "Giornata", "Federazione"]
     display_df = df.drop(columns=columns_to_hide, errors='ignore')
     display_df["Data"] = display_df["Data"].dt.strftime("%d/%m/%y")
-    
-    # Recupera indice riga selezionata
-    selected_rows = st.session_state.get("match_table", {}).get("selection", {}).get("rows", [])
+    ordine_colonne = ["Ora", "Data", "Casa", "Ospite", "Categoria"]
+    colonne = [col for col in ordine_colonne if col in display_df.columns]
+    display_df["ID"] = df["ID"].values  # mantiene ID anche nella vista
 
-    col1, col2 = st.columns([5, 5])  # 3:1 dimension ratio
+    # Recupera selezione precedente (se esiste)
+    prev_selected_ids = st.session_state.get("selected_ids", set())
 
-    with col1:
-        # Mostra il dataframe con selezione abilitata
-        ordine_colonne = ["Ora", "Data", "Casa", "Ospite"]
-        colonne = [col for col in ordine_colonne if col in display_df.columns]
+    cols = st.columns([5, 5])
+    with cols[0]:
         st.dataframe(
             display_df[colonne],
             width='stretch',
@@ -83,37 +72,52 @@ try:
             hide_index=True
         )
 
-    with col2:
+    # Rileva righe selezionate nella visualizzazione attuale
+    selected_rows = st.session_state.get("match_table", {}).get("selection", {}).get("rows", [])
+    selected_ids = set(display_df.iloc[selected_rows]["ID"]) if selected_rows else set()
+    # Identifica nuova selezione
+    new_selection = selected_ids - prev_selected_ids
+    if new_selection:
+        last_selected_id = list(new_selection)[-1]  # prendi l'ultima "nuova" selezione
+        st.session_state["last_selected_id"] = last_selected_id
+    else:
+        last_selected_id = st.session_state.get("last_selected_id", None)
+    st.session_state["selected_ids"] = selected_ids
+
+    # Filtra df per mostrare dettagli delle righe selezionate
+    righe_selezionate = df[df["ID"].isin(selected_ids)]
+
+    with cols[1]:
         st.subheader("Dettagli partita")
-        if selected_rows:
-            selected_idx = selected_rows[0]
-            dettagli = df.iloc[selected_idx]
+        if last_selected_id:
+            dettagli = df[df["ID"] == last_selected_id].iloc[0]
             for col, val in dettagli.items():
+                if col == "ID":
+                    continue  # salta la colonna ID
                 st.markdown(f"<p style='margin: 2px 0;'><strong>{col}:</strong> {val.strftime("%d/%m/%y") if col=="Data" else val}</p>", unsafe_allow_html=True)
         else:
             st.write("Seleziona una riga per vedere i dettagli.")
-    
-    testo_wa = "" 
-    if selected_rows:
-        for idx in selected_rows:
-            row = df.iloc[idx]
+
+    # Genera testo WhatsApp
+    if not righe_selezionate.empty:
+        testo_wa = ""
+        for _, row in righe_selezionate.iterrows():
             blocco = f'{row["Categoria"]} {row["Federazione"].upper()} \n{row["Casa"]} - {row["Ospite"]}\nGirone {row["Girone"]}\n{row["Ora"]}'
-            testo_wa +=  "\n\n" + blocco if testo_wa else blocco
-        
+            testo_wa += "\n\n" + blocco if testo_wa else blocco
+
         st.markdown("---")
-        wa_col1, wa_col2 = st.columns([6, 8]) 
-        with wa_col1:
+        wa_cols = st.columns([6, 8])
+        with wa_cols[0]:
             st.markdown("Testo da copiare per inviarlo via WhatsApp")
             st.code(testo_wa, language=None)
-        
+
     st.markdown("---")
     st.write("Link per verifica calendari dai siti ufficiali")
-    btn_col2, btn_col3, btn_col4 = st.columns([1,1,13]) 
-    with btn_col2:
+    btn_cols = st.columns([1, 1, 13])
+    with btn_cols[1]:
         st.markdown("[CSI](https://live.centrosportivoitaliano.it/25/Lombardia/Bergamo)", unsafe_allow_html=True)
-    with btn_col3:
+    with btn_cols[2]:
         st.markdown("[FIGC](https://www.crlombardia.it/comunicati?q=&page=&content_category_value_id=27&delegazioni%5B%5D=13)", unsafe_allow_html=True)
-
 
 except Exception as e:
     st.error(f"Errore nella lettura del file: {e}")
