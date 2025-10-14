@@ -28,17 +28,36 @@ try:
     df = df.sort_values(by=["Data", "Casa"], ascending=[True, True])
 
      # Creiamo due colonne affiancate per i filtri
-    col1, col2, col3 = st.columns([2, 2, 6])  # 1:1:2 dimension ratio
+    col1, col2, col3, col4 = st.columns([4, 3, 2, 12])  # 1:1:2 dimension ratio
 
     with col1:
-        # Filtro testo generico su Casa e Ospite
-        testo_filtrato = st.text_input(label="",placeholder="Cerca per Squadra", icon="⚽")
+        testo_filtrato = st.text_input(label="", placeholder="Cerca per Squadra", icon="⚽")
+
+    with col2:
+        categoria_selezionata = st.selectbox(
+            "Categoria",
+            options=["Tutte"] + sorted(df["Categoria"].dropna().unique()),
+            index=0
+        )
+
+    with col3:
+        girone_selezionato = st.selectbox(
+            "Girone",
+            options=["Tutti"] + sorted(df["Girone"].dropna().unique()),
+            index=0
+        )
 
     # Applichiamo i filtri
     if testo_filtrato:
         mask_casa = df["Casa"].astype(str).str.contains(testo_filtrato, case=False, na=False)
         mask_ospite = df["Ospite"].astype(str).str.contains(testo_filtrato, case=False, na=False)
         df = df[mask_casa | mask_ospite]
+    
+    if categoria_selezionata != "Tutte":
+        df = df[df["Categoria"] == categoria_selezionata]
+
+    if girone_selezionato != "Tutti":
+        df = df[df["Girone"] == girone_selezionato]
 
     # Nascondi colonna Indirizzo solo nella visualizzazione
     columns_to_hide = ["Indirizzo", "A/R", "Girone", "Giornata", "Federazione"]
