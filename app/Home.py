@@ -10,37 +10,37 @@ st.write(
 st.markdown("Partite Settore di Base")
 
 uploaded_file = "app/resources/AllCalendarsMerged.xlsx"
-@st.cache_data
+@st.cache_data(ttl="1h")
 def load_excel(file_path):
-    return pd.read_excel(file_path, engine="openpyxl")
-
-try:
-    # Legge il file Excel
-    df = load_excel(uploaded_file)
-    
-    # ✅ Parsing della colonna "Data" (assicurati che il nome corrisponda esattamente)
+    df = pd.read_excel(file_path, engine="openpyxl")
     df["Data"] = pd.to_datetime(df["Data"], format="%d/%m/%Y", errors='coerce')
-
+    
     # ✅ Filtra per i prossimi 7 giorni
     oggi = datetime.today()
     settimana_prossima = oggi + timedelta(days=7)
     df = df[(df["Data"] >= oggi) & (df["Data"] <= settimana_prossima)]
     df = df.sort_values(by=["Data", "Casa"], ascending=[True, True])
+    
+    return df
+
+try:
+    # Legge il file Excel
+    df = load_excel(uploaded_file)
 
      # Creiamo due colonne affiancate per i filtri
-    col1, col2, col3, col4 = st.columns([4, 3, 2, 12])  # 1:1:2 dimension ratio
+    cols = st.columns([4, 3, 2, 12])  # 1:1:2 dimension ratio
 
-    with col1:
-        testo_filtrato = st.text_input(label="", placeholder="Cerca per Squadra", icon="⚽")
+    with cols[0]:
+        testo_filtrato = st.text_input(label="Squadra Casa/Ospite", placeholder="", icon="⚽")
 
-    with col2:
+    with cols[1]:
         categoria_selezionata = st.selectbox(
             "Categoria",
             options=["Tutte"] + sorted(df["Categoria"].dropna().unique()),
             index=0
         )
 
-    with col3:
+    with cols[2]:
         girone_selezionato = st.selectbox(
             "Girone",
             options=["Tutti"] + sorted(df["Girone"].dropna().unique()),
@@ -71,14 +71,14 @@ try:
 
     with col1:
         # Mostra il dataframe con selezione abilitata
-        ordine_colonne = ["Casa", "Ospite","Categoria", "Ora", "Data"]
+        ordine_colonne = ["Ora", "Data", "Casa", "Ospite"]
         colonne = [col for col in ordine_colonne if col in display_df.columns]
         st.dataframe(
             display_df[colonne],
             width='stretch',
             height=350,
             on_select="rerun",
-            selection_mode="single-row",
+            selection_mode="multi-row",
             key="match_table",
             hide_index=True
         )
@@ -89,18 +89,22 @@ try:
             selected_idx = selected_rows[0]
             dettagli = df.iloc[selected_idx]
             for col, val in dettagli.items():
-                st.markdown(f"<p style='margin: 2px 0;'><strong>{col}:</strong> {val}</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='margin: 2px 0;'><strong>{col}:</strong> {val.strftime("%d/%m/%y") if col=="Data" else val}</p>", unsafe_allow_html=True)
         else:
             st.write("Seleziona una riga per vedere i dettagli.")
     
-
+    testo_wa = "" 
     if selected_rows:
-        testo_da_copiare = f'{dettagli["Categoria"]} {dettagli["Federazione"].upper()} \n{dettagli["Casa"]} - {dettagli["Ospite"]}\nGirone {dettagli["Girone"]}\n{dettagli["Ora"]}'
+        for idx in selected_rows:
+            row = df.iloc[idx]
+            blocco = f'{row["Categoria"]} {row["Federazione"].upper()} \n{row["Casa"]} - {row["Ospite"]}\nGirone {row["Girone"]}\n{row["Ora"]}'
+            testo_wa +=  "\n\n" + blocco if testo_wa else blocco
+        
         st.markdown("---")
         wa_col1, wa_col2 = st.columns([6, 8]) 
         with wa_col1:
             st.markdown("Testo da copiare per inviarlo via WhatsApp")
-            st.code(testo_da_copiare, language=None)
+            st.code(testo_wa, language=None)
         
     st.markdown("---")
     st.write("Link per verifica calendari dai siti ufficiali")
