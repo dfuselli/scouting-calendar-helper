@@ -154,7 +154,7 @@ try:
 
     st.markdown("---")
     st.write("Link per verifica calendari dai siti ufficiali")
-    btn_cols = st.columns([1, 1, 2, 13])
+    btn_cols = st.columns([0.5, 0.5, 1.5, 13])
     with btn_cols[0]:
         st.markdown("[CSI](https://live.centrosportivoitaliano.it/25/Lombardia/Bergamo)", unsafe_allow_html=True)
     with btn_cols[1]:
