@@ -70,8 +70,8 @@ def print_match_details(df):
     st.subheader("Dettagli partita")
     if st.session_state.get("last_selected_id", None):
         dettagli = df[df["ID"] == st.session_state.get("last_selected_id")].iloc[0]
+        st.markdown(f"<p style='margin: 2px 0;'>{dettagli["Casa"]} - {dettagli["Ospite"]}</p>", unsafe_allow_html=True)
         st.markdown(f"<p style='margin: 2px 0;'><strong>Categoria:</strong> {dettagli["Fascia"]} <strong>Girone:</strong>{dettagli["Girone"]}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='margin: 2px 0;'><strong>Partita:</strong> {dettagli["Casa"]} - {dettagli["Ospite"]}</p>", unsafe_allow_html=True)
         st.markdown(f"<p style='margin: 2px 0;'><strong>Data:</strong> {dettagli["Time"]} <strong>Giornata:</strong> {dettagli["Giornata"]} {dettagli["A/R"]}</p>", unsafe_allow_html=True)
         st.markdown(f"<p style='margin: 2px 0;'><strong>Indirizzo:</strong> {dettagli["Indirizzo"]}</p>", unsafe_allow_html=True)
     else:
