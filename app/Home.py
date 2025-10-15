@@ -59,7 +59,7 @@ def handle_change():
 
         for col, new_value in row_changes.items():
             old_value = df.at[df_row_index, col]
-            # df.at[df_row_index, col] = new_value
+            df.at[df_row_index, col] = new_value
 
             if col == "Selezionato" and new_value is True and old_value != True:
                 if st.session_state.get("last_selected_id") != df.at[df_row_index, "ID"]:
@@ -124,7 +124,7 @@ try:
         df_clone = df_clone[df_clone["Girone"] == girone_selezionato]
 
     # Dopo il filtro, aggiorna il df visibile
-    st.session_state.df_clone = df_clone.copy()
+    st.session_state.df_clone = df_clone
 
     cols = st.columns([4.5, 6])
     with cols[0]:
