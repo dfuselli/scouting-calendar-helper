@@ -137,7 +137,7 @@ try:
             hide_index=True,
             on_change=handle_change,
             column_config={
-                "Selezionato": st.column_config.CheckboxColumn(width=25, pinned=True),
+                "Selezionato": st.column_config.CheckboxColumn(width=30, pinned=True),
                 "Time": st.column_config.TextColumn("Data", disabled=True),
                 "Casa": st.column_config.TextColumn("Casa", disabled=True),
                 "Ospite": st.column_config.TextColumn("Ospite", disabled=True),
