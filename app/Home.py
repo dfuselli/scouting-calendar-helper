@@ -59,7 +59,7 @@ def handle_change():
 
         for col, new_value in row_changes.items():
             old_value = df.at[df_row_index, col]
-            df.at[df_row_index, col] = new_value
+            # df.at[df_row_index, col] = new_value
 
             if col == "Selezionato" and new_value is True and old_value != True:
                 if st.session_state.get("last_selected_id") != df.at[df_row_index, "ID"]:
@@ -67,7 +67,7 @@ def handle_change():
 
 
 def print_match_details(df):
-    st.text("Dettagli partita")
+    st.subheader("Dettagli partita")
     if st.session_state.get("last_selected_id", None):
         dettagli = df[df["ID"] == st.session_state.get("last_selected_id")].iloc[0]
         st.markdown(f"<p style='margin: 2px 0;'><strong>Categoria:</strong> {dettagli["Fascia"]} <strong>Girone:</strong>{dettagli["Girone"]}</p>", unsafe_allow_html=True)
@@ -137,7 +137,7 @@ try:
             hide_index=True,
             on_change=handle_change,
             column_config={
-                "Selezionato": st.column_config.CheckboxColumn(width=20, pinned=True),
+                "Selezionato": st.column_config.CheckboxColumn(width=25, pinned=True),
                 "Time": st.column_config.TextColumn("Data", disabled=True),
                 "Casa": st.column_config.TextColumn("Casa", disabled=True),
                 "Ospite": st.column_config.TextColumn("Ospite", disabled=True),
