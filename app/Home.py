@@ -161,10 +161,15 @@ try:
                 """,
                 unsafe_allow_html=True
             )
+
+            altezza_per_riga = 35  # px per riga (approssimativa)
+            altezza_massima = 350  # px, per non occupare tutto lo schermo
+
+            altezza_calcolata = min(altezza_per_riga * len(df_visible), altezza_massima)
             st.data_editor(
                 data=df_visible,
                 width='stretch',
-                height=350,
+                height=altezza_calcolata,
                 column_order = ("Selezionato", "Time", "Casa", "Ospite", "Fascia"),
                 key="match_table",
                 hide_index=True,
