@@ -19,7 +19,7 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 uploaded_file = "app/resources/AllCalendarsMerged.xlsx"
 
-@st.cache_data(ttl="1h")
+@st.cache_data(ttl="15m")
 def load_excel(file_path):
     df = pd.read_excel(file_path, engine="openpyxl")
     df["Data"] = pd.to_datetime(df["Data"], format="%d/%m/%Y", errors='coerce')
@@ -51,8 +51,8 @@ def handle_change():
         row_index = int(row_index_str)
 
         # Ottieni l'ID dalla riga visibile
-        df_clone = st.session_state.df_clone  # df visibile nel momento della modifica
-        row_id = df_clone.iloc[row_index]["ID"]
+        df_visible = st.session_state.df_visible  # df visibile nel momento della modifica
+        row_id = df_visible.iloc[row_index]["ID"]
 
         # Trova la riga corrispondente nell'original_df
         df_row_index = df[df["ID"] == row_id].index[0]
@@ -100,36 +100,57 @@ try:
     # Legge il file Excel
     if "original_df" not in st.session_state:
         st.session_state.original_df = load_excel(uploaded_file)
+        st.session_state.df_visible  = st.session_state.original_df.copy()
 
-    df_clone = st.session_state.original_df.copy()
+    # 🔹 Salva i vecchi valori (solo la prima volta)
+    for key in ["old_testo", "old_categoria", "old_girone"]:
+        if key not in st.session_state:
+            st.session_state[key] = None
 
     # Filtri
     cols = st.columns([3, 3, 2, 12])
     with cols[0]:
         testo_filtrato = st.text_input("Squadra Casa/Ospite", placeholder="", icon="⚽").strip()
     with cols[1]:
-        categoria_selezionata = st.selectbox("Fascia", options=["Tutte"] + sorted(df_clone["Fascia"].dropna().unique()), index=0)
+        categoria_selezionata = st.selectbox("Fascia", options=["Tutte"] + sorted(st.session_state.original_df["Fascia"].dropna().unique()), index=0)
     with cols[2]:
-        girone_selezionato = st.selectbox("Girone", options=["Tutti"] + sorted(df_clone["Girone"].dropna().unique()), index=0)
+        girone_selezionato = st.selectbox("Girone", options=["Tutti"] + sorted(st.session_state.original_df["Girone"].dropna().unique()), index=0)
 
-    if testo_filtrato:
-        mask_casa = df_clone["Casa"].astype(str).str.contains(testo_filtrato, case=False, na=False)
-        mask_ospite = df_clone["Ospite"].astype(str).str.contains(testo_filtrato, case=False, na=False)
-        df_clone = df_clone[mask_casa | mask_ospite]
-    
-    if categoria_selezionata != "Tutte":
-        df_clone = df_clone[df_clone["Fascia"] == categoria_selezionata]
 
-    if girone_selezionato != "Tutti":
-        df_clone = df_clone[df_clone["Girone"] == girone_selezionato]
+    # --- CONTROLLO VARIAZIONI ---
+    filtri_cambiati = (
+        testo_filtrato != st.session_state.old_testo or
+        categoria_selezionata != st.session_state.old_categoria or
+        girone_selezionato != st.session_state.old_girone
+    )
 
-    # Dopo il filtro, aggiorna il df visibile
-    st.session_state.df_clone = df_clone
+    if filtri_cambiati:
+        st.session_state.df_visible  = st.session_state.original_df.copy()
+        df_visible = st.session_state.df_visible
+        if testo_filtrato:
+            mask_casa = df_visible["Casa"].astype(str).str.contains(testo_filtrato, case=False, na=False)
+            mask_ospite = df_visible["Ospite"].astype(str).str.contains(testo_filtrato, case=False, na=False)
+            df_visible = df_visible[mask_casa | mask_ospite]
+        
+        if categoria_selezionata != "Tutte":
+            df_visible = df_visible[df_visible["Fascia"] == categoria_selezionata]
+
+        if girone_selezionato != "Tutti":
+            df_visible = df_visible[df_visible["Girone"] == girone_selezionato]
+
+        # Aggiorna stato e salvataggio dei valori attuali
+        st.session_state.df_visible = df_visible
+        st.session_state.old_testo = testo_filtrato
+        st.session_state.old_categoria = categoria_selezionata
+        st.session_state.old_girone = girone_selezionato
+    else:
+        df_visible = st.session_state.df_visible
+
 
     cols = st.columns([4.5, 6])
     with cols[0]:
         st.data_editor(
-            data=df_clone,
+            data=df_visible,
             width='stretch',
             height=350,
             column_order = ("Selezionato", "Time", "Casa", "Ospite", "Fascia"),
