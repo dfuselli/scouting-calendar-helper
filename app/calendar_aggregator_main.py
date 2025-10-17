@@ -34,6 +34,20 @@ def merge_excel_sheets(input_file: str, output_file: str):
     except Exception as e:
         print(f"⚠️ Errore nella normalizzazione della colonna data '{first_col}': {e}")
 
+    # Normalizza la prima colonna come time nel formato hh:mm
+    target_col = combined_df.columns[5]
+    try:
+        # Converte in stringa e rimuove eventuale terza parte dopo il secondo ':'
+        def pulisci_valore(x):
+            if pd.isna(x):
+                return x
+            x = str(x)
+            x_pulito = ':'.join(x.split(':')[:2])
+            return x_pulito
+        combined_df[target_col] = combined_df[target_col].apply(pulisci_valore)
+    except Exception as e:
+        print(f"⚠️ Errore nella normalizzazione della colonna '{target_col}': {e}")
+
     # Mantiene solo le prime 10 colonne
     combined_df = combined_df.iloc[:, :10]
 
