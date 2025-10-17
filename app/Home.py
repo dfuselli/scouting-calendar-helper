@@ -149,6 +149,17 @@ try:
 
     cols = st.columns([4.5, 6])
     with cols[0]:
+        st.markdown(
+            """
+            <style>
+            div[data-testid="stDataFrameContainer"] {
+                overflow-y: auto;  /* permette solo scroll interno */
+                overscroll-behavior: contain;  /* evita propagazione momentum */
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
         st.data_editor(
             data=df_visible,
             width='stretch',
@@ -158,7 +169,7 @@ try:
             hide_index=True,
             on_change=handle_change,
             column_config={
-                "Selezionato": st.column_config.CheckboxColumn(width=30, pinned=True),
+                "Selezionato": st.column_config.CheckboxColumn("", width=35, pinned=True),
                 "Time": st.column_config.TextColumn("Data", disabled=True),
                 "Casa": st.column_config.TextColumn("Casa", disabled=True),
                 "Ospite": st.column_config.TextColumn("Ospite", disabled=True),
@@ -174,7 +185,7 @@ try:
     print_wa_code(st.session_state.original_df)
 
     st.markdown("---")
-    st.write("Link per verifica calendari dai siti ufficiali")
+    st.markdown("🔗*_LINKS VERIFICA DATE DAI SITI UFFICIALI:_*")
     btn_cols = st.columns([0.5, 0.5, 1.5, 13])
     with btn_cols[0]:
         st.markdown("[CSI](https://live.centrosportivoitaliano.it/25/Lombardia/Bergamo)", unsafe_allow_html=True)
