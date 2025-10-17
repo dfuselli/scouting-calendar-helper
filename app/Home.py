@@ -33,7 +33,7 @@ def load_excel(file_path):
     # Aggiungi colonna ID univoco per tracciabilità
     df["ID"] = df.apply(lambda row: f'{row["Data"].strftime("%Y%m%d")}_{row["Categoria"]}_{row["Casa"]}_{row["Ospite"]}', axis=1)
     df["Time"] = df.apply(lambda row: f'{row["Data"].strftime("%d/%m")} {row["Ora"]}', axis=1)
-    df["Fascia"] = df.apply(lambda row: f'{merge_categoria_federazione(row["Categoria"])} {row["Federazione"].upper()}', axis=1)
+    df["Fascia"] = df.apply(lambda row: f'{"🟡" if row["Federazione"].upper() == 'CSI' else "🔵"}{merge_categoria_federazione(row["Categoria"])}', axis=1)
     df["Selezionato"] = df.apply(lambda row: False, axis=1)
 
     return df
@@ -67,20 +67,20 @@ def handle_change():
 
 
 def print_match_details(df):
-    st.subheader("Dettagli partita")
+    st.markdown("✅*_DETTAGLI PARTITA:_*")
     if st.session_state.get("last_selected_id", None):
         dettagli = df[df["ID"] == st.session_state.get("last_selected_id")].iloc[0]
-        st.markdown(f"<p style='margin: 2px 0;'>{dettagli["Casa"]} - {dettagli["Ospite"]}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='margin: 2px 0;'><strong>Categoria:</strong> {dettagli["Fascia"]} <strong>Girone:</strong>{dettagli["Girone"]}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='margin: 2px 0;'><strong>Data:</strong> {dettagli["Time"]} <strong>Giornata:</strong> {dettagli["Giornata"]} {dettagli["A/R"]}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='margin: 2px 0;'><strong>Indirizzo:</strong> {dettagli["Indirizzo"]}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='margin: 2px 0;'>🏟️{dettagli["Casa"]}&emsp;✈️{dettagli["Ospite"]}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='margin: 2px 0;'>{dettagli["Fascia"]} &emsp;<strong>Girone:</strong>&nbsp;{dettagli["Girone"]}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='margin: 2px 0;'>🕒{dettagli["Time"]} &emsp;📅 {dettagli["Giornata"]} {dettagli["A/R"]}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='margin: 2px 0;'>📍{dettagli["Indirizzo"]}</p>", unsafe_allow_html=True)
     else:
         st.write("Seleziona una riga per vedere i dettagli.")
 
 def print_wa_code(df):
     righe_selezionate =  df[df["Selezionato"]]
     if not righe_selezionate.empty:
-        testo_wa = "⚽Partite in programma da visionare:"
+        testo_wa = "⚽Programma partite da visionare⚽"
         for _, row in righe_selezionate.iterrows():
             blocco = (
                 f'{row["Categoria"]} {row["Federazione"].upper()} \n'
@@ -93,7 +93,7 @@ def print_wa_code(df):
         st.markdown("---")
         wa_cols = st.columns([6, 8])
         with wa_cols[0]:
-            st.markdown("Testo da copiare per inviarlo via WhatsApp")
+            st.markdown("✅*_TESTO PER INVIO PROGRAMMA VIA WHATSAPP:_*")
             st.code(testo_wa, language=None)
 
 try:
@@ -108,11 +108,11 @@ try:
             st.session_state[key] = None
 
     # Filtri
-    cols = st.columns([3, 3, 2, 12])
+    cols = st.columns([3, 2.5, 1.5, 12])
     with cols[0]:
         testo_filtrato = st.text_input("Squadra Casa/Ospite", placeholder="", icon="⚽").strip()
     with cols[1]:
-        categoria_selezionata = st.selectbox("Fascia", options=["Tutte"] + sorted(st.session_state.original_df["Fascia"].dropna().unique()), index=0)
+        categoria_selezionata = st.selectbox("🔵FIGC 🟡CSI ", options=["Tutte"] + sorted(st.session_state.original_df["Fascia"].dropna().unique()), index=0)
     with cols[2]:
         girone_selezionato = st.selectbox("Girone", options=["Tutti"] + sorted(st.session_state.original_df["Girone"].dropna().unique()), index=0)
 
