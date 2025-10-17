@@ -149,33 +149,35 @@ try:
 
     cols = st.columns([4.5, 6])
     with cols[0]:
-        st.markdown(
-            """
-            <style>
-            div[data-testid="stDataFrameContainer"] {
-                overflow-y: auto;  /* permette solo scroll interno */
-                overscroll-behavior: contain;  /* evita propagazione momentum */
-            }
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
-        st.data_editor(
-            data=df_visible,
-            width='stretch',
-            height=350,
-            column_order = ("Selezionato", "Time", "Casa", "Ospite", "Fascia"),
-            key="match_table",
-            hide_index=True,
-            on_change=handle_change,
-            column_config={
-                "Selezionato": st.column_config.CheckboxColumn("", width=35, pinned=True),
-                "Time": st.column_config.TextColumn("Data", disabled=True),
-                "Casa": st.column_config.TextColumn("Casa", disabled=True),
-                "Ospite": st.column_config.TextColumn("Ospite", disabled=True),
-                "Fascia": st.column_config.TextColumn("Fascia", disabled=True),
-            },
-        )
+        with st.container():
+            st.markdown(
+                """
+                <style>
+                div[data-testid="stDataFrameContainer"] {
+                    overflow-y: auto;  /* permette solo scroll interno */
+                    overscroll-behavior: contain;  /* evita propagazione momentum */
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+            st.data_editor(
+                data=df_visible,
+                width='stretch',
+                height=350,
+                column_order = ("Selezionato", "Time", "Casa", "Ospite", "Fascia"),
+                key="match_table",
+                hide_index=True,
+                on_change=handle_change,
+                column_config={
+                    "Selezionato": st.column_config.CheckboxColumn("", width=35, pinned=True),
+                    "Time": st.column_config.TextColumn("Data", disabled=True),
+                    "Casa": st.column_config.TextColumn("Casa", disabled=True),
+                    "Ospite": st.column_config.TextColumn("Ospite", disabled=True),
+                    "Fascia": st.column_config.TextColumn("Fascia", disabled=True),
+                },
+            )
+            st.markdown("</div>", unsafe_allow_html=True)
 
     # Filtra df per mostrare dettagli delle righe selezionate
     with cols[1]:
