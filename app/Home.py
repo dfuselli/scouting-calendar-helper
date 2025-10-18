@@ -111,26 +111,17 @@ try:
     cols = st.columns([4, 16])
     with cols[0]:
         testo_filtrato = st.text_input("Squadra Casa/Ospite", placeholder="", icon="⚽").strip()
-
-    st.write('''<style>
-
-    [data-testid="column"] {
-        width: calc(33.3333% - 1rem) !important;
-        flex: 1 1 calc(33.3333% - 1rem) !important;
-        min-width: calc(33% - 1rem) !important;
-    }
-    </style>''', unsafe_allow_html=True)
-    cols = st.columns([2.5, 1.5, 16])
+    cols = st.columns([4, 16])
     with cols[0]:
         categoria_selezionata = st.selectbox("🔵FIGC 🟡CSI ", options=["Tutte"] + sorted(st.session_state.original_df["Fascia"].dropna().unique()), index=0)
-    with cols[1]:
-        girone_selezionato = st.selectbox("Girone", options=["Tutti"] + sorted(st.session_state.original_df["Girone"].dropna().unique()), index=0)
+    # with cols[1]:
+    #     girone_selezionato = st.selectbox("Girone", options=["Tutti"] + sorted(st.session_state.original_df["Girone"].dropna().unique()), index=0)
 
     # --- CONTROLLO VARIAZIONI ---
     filtri_cambiati = (
         testo_filtrato != st.session_state.old_testo or
-        categoria_selezionata != st.session_state.old_categoria or
-        girone_selezionato != st.session_state.old_girone
+        # girone_selezionato != st.session_state.old_girone or
+        categoria_selezionata != st.session_state.old_categoria
     )
 
     if filtri_cambiati:
@@ -144,14 +135,14 @@ try:
         if categoria_selezionata != "Tutte":
             df_visible = df_visible[df_visible["Fascia"] == categoria_selezionata]
 
-        if girone_selezionato != "Tutti":
-            df_visible = df_visible[df_visible["Girone"] == girone_selezionato]
+        # if girone_selezionato != "Tutti":
+        #     df_visible = df_visible[df_visible["Girone"] == girone_selezionato]
 
         # Aggiorna stato e salvataggio dei valori attuali
         st.session_state.df_visible = df_visible
         st.session_state.old_testo = testo_filtrato
         st.session_state.old_categoria = categoria_selezionata
-        st.session_state.old_girone = girone_selezionato
+        # st.session_state.old_girone = girone_selezionato
     else:
         df_visible = st.session_state.df_visible
 
