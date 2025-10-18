@@ -152,7 +152,7 @@ try:
             altezza_per_riga = 35  # px per riga (approssimativa)
             altezza_massima = 350  # px, per non occupare tutto lo schermo
 
-            altezza_calcolata = min(altezza_per_riga * len(df_visible), altezza_massima)
+            altezza_calcolata = min(altezza_per_riga * (len(df_visible) + 1), altezza_massima)
             st.data_editor(
                 data=df_visible,
                 width='stretch',
@@ -171,8 +171,10 @@ try:
             )
 
     # Filtra df per mostrare dettagli delle righe selezionate
-    with cols[1]:
-        print_match_details(st.session_state.original_df)
+    cols = st.columns([4.5, 6])
+    with cols[0]:
+        with st.container():
+            print_match_details(st.session_state.original_df)
 
     # Genera testo WhatsApp
     print_wa_code(st.session_state.original_df)
