@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from helpers import merge_categoria_federazione
 
 # Configura la pagina
@@ -25,9 +25,9 @@ def load_excel(file_path):
     df["Data"] = pd.to_datetime(df["Data"], format="%d/%m/%Y", errors='coerce')
     
     # Filtra per i prossimi 7 giorni
-    oggi = datetime.today()
-    settimana_prossima = oggi + timedelta(days=7)
-    df = df[(df["Data"] >= oggi) & (df["Data"] <= settimana_prossima)]
+    oggi_mezzanotte = datetime.combine(datetime.today(), time.min)
+    settimana_prossima = oggi_mezzanotte + timedelta(days=7)
+    df = df[(df["Data"] >= oggi_mezzanotte) & (df["Data"] < settimana_prossima)]
     df = df.sort_values(by=["Casa", "Ospite"], ascending=[True, True])
     
     # Aggiungi colonna ID univoco per tracciabilità
