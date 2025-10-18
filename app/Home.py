@@ -96,37 +96,6 @@ def print_wa_code(df):
             st.markdown("✅*_TESTO PER INVIO PROGRAMMA VIA WHATSAPP:_*")
             st.code(testo_wa, language=None)
 
-def stop_scrolldown():
-    st.markdown(
-                """
-                <style>
-                div[data-testid="stDataFrameContainer"] {
-                    overflow-y: auto;  /* permette solo scroll interno */
-                    overscroll-behavior: contain;  /* evita propagazione momentum */
-                }
-                </style>
-                """,
-                unsafe_allow_html=True
-            )
-
-def force_horizontal_select():
-    st.markdown("""
-    <style>
-    .horizontal-selects {
-        display: flex;
-        flex-wrap: nowrap; /* non andare a capo */
-        gap: 1rem;         /* spazio tra gli elementi */
-    }
-    .horizontal-selects > div {
-        flex: 1;           /* stessa larghezza per ogni selectbox */
-        min-width: 100px;  /* evita che si stringano troppo */
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-    # Usa il layout custom
-    st.markdown('<div class="horizontal-selects">', unsafe_allow_html=True)
-
 try:
     # Legge il file Excel
     if "original_df" not in st.session_state:
@@ -143,14 +112,19 @@ try:
     with cols[0]:
         testo_filtrato = st.text_input("Squadra Casa/Ospite", placeholder="", icon="⚽").strip()
 
-    with st.container():
-        cols = st.columns([2.5, 1.5, 16])
-        force_horizontal_select()
-        with cols[0]:
-            categoria_selezionata = st.selectbox("🔵FIGC 🟡CSI ", options=["Tutte"] + sorted(st.session_state.original_df["Fascia"].dropna().unique()), index=0)
-        with cols[1]:
-            girone_selezionato = st.selectbox("Girone", options=["Tutti"] + sorted(st.session_state.original_df["Girone"].dropna().unique()), index=0)
-        st.markdown('</div>', unsafe_allow_html=True)
+    st.write('''<style>
+
+    [data-testid="column"] {
+        width: calc(33.3333% - 1rem) !important;
+        flex: 1 1 calc(33.3333% - 1rem) !important;
+        min-width: calc(33% - 1rem) !important;
+    }
+    </style>''', unsafe_allow_html=True)
+    cols = st.columns([2.5, 1.5, 16])
+    with cols[0]:
+        categoria_selezionata = st.selectbox("🔵FIGC 🟡CSI ", options=["Tutte"] + sorted(st.session_state.original_df["Fascia"].dropna().unique()), index=0)
+    with cols[1]:
+        girone_selezionato = st.selectbox("Girone", options=["Tutti"] + sorted(st.session_state.original_df["Girone"].dropna().unique()), index=0)
 
     # --- CONTROLLO VARIAZIONI ---
     filtri_cambiati = (
