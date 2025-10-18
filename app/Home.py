@@ -19,6 +19,19 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 uploaded_file = "app/resources/AllCalendarsMerged.xlsx"
 
+def stop_scrolldown():
+    st.markdown(
+                """
+                <style>
+                div[data-testid="stDataFrameContainer"] {
+                    overflow-y: auto;  /* permette solo scroll interno */
+                    overscroll-behavior: contain;  /* evita propagazione momentum */
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+    
 @st.cache_data(ttl="15m")
 def load_excel(file_path):
     df = pd.read_excel(file_path, engine="openpyxl")
@@ -146,6 +159,7 @@ try:
     else:
         df_visible = st.session_state.df_visible
 
+    stop_scrolldown()
     cols = st.columns([4.5, 6])
     with cols[0]:
         with st.container():
@@ -169,6 +183,7 @@ try:
                     "Fascia": st.column_config.TextColumn("Fascia", disabled=True),
                 },
             )
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # Filtra df per mostrare dettagli delle righe selezionate
     cols = st.columns([4.5, 6])
