@@ -41,7 +41,7 @@ def load_excel(file_path):
     oggi_mezzanotte = datetime.combine(datetime.today(), time.min)
     settimana_prossima = oggi_mezzanotte + timedelta(days=7)
     df = df[(df["Data"] >= oggi_mezzanotte) & (df["Data"] < settimana_prossima)]
-    df = df.sort_values(by=["Casa", "Ospite"], ascending=[True, True])
+    df = df.sort_values(by=["Data", "Casa"], ascending=[True, True])
     
     # Aggiungi colonna ID univoco per tracciabilità
     df["ID"] = df.apply(lambda row: f'{row["Data"].strftime("%Y%m%d")}_{row["Categoria"]}_{row["Casa"]}_{row["Ospite"]}', axis=1)
