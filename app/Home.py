@@ -93,7 +93,7 @@ def print_match_details(df):
 def print_wa_code(df):
     righe_selezionate =  df[df["Selezionato"]]
     if not righe_selezionate.empty:
-        testo_wa = "⚽Programma partite da visionare⚽"
+        testo_wa = "⚽Programma partite da visionare"
         for _, row in righe_selezionate.iterrows():
             blocco = (
                 f'{row["Categoria"]} {row["Federazione"].upper()} \n'
