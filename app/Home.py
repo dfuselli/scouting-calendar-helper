@@ -41,7 +41,7 @@ def load_excel(file_path):
     oggi_mezzanotte = datetime.combine(datetime.today(), time.min)
     settimana_prossima = oggi_mezzanotte + timedelta(days=7)
     df = df[(df["Data"] >= oggi_mezzanotte) & (df["Data"] < settimana_prossima)]
-    df = df.sort_values(by=["Data", "Casa"], ascending=[True, True])
+
     
     # Aggiungi colonna ID univoco per tracciabilità
     df["ID"] = df.apply(lambda row: f'{row["Data"].strftime("%Y%m%d")}_{row["Categoria"]}_{row["Casa"]}_{row["Ospite"]}', axis=1)
@@ -49,6 +49,7 @@ def load_excel(file_path):
     df["Fascia"] = df.apply(lambda row: f'{"🟡" if row["Federazione"].upper() == 'CSI' else "🔵"}{merge_categoria_federazione(row["Categoria"])}', axis=1)
     df["Selezionato"] = df.apply(lambda row: False, axis=1)
 
+    df = df.sort_values(by=["Time", "Casa"], ascending=[True, True])
     return df
 
 
