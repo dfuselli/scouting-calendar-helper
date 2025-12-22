@@ -44,13 +44,16 @@ def load_excel(file_path):
 
     
     # Aggiungi colonna ID univoco per tracciabilità
-    df["ID"] = df.apply(lambda row: f'{row["Data"].strftime("%Y%m%d")}_{row["Categoria"]}_{row["Casa"]}_{row["Ospite"]}', axis=1)
-    df["Time"] = df.apply(lambda row: f'{row["Data"].strftime("%d/%m")} {row["Ora"]}', axis=1)
-    df["Fascia"] = df.apply(lambda row: f'{"🟡" if row["Federazione"].upper() == 'CSI' else "🔵"}{merge_categoria_federazione(row["Categoria"])}', axis=1)
-    df["Selezionato"] = df.apply(lambda row: False, axis=1)
-
-    df = df.sort_values(by=["Time", "Casa"], ascending=[True, True])
-    return df
+    if df.empty:
+        st.warning("Nessuna partita trovata nei prossimi 7 giorni.")
+        return df
+    else:
+        df["ID"] = df.apply(lambda row: f'{row["Data"].strftime("%Y%m%d")}_{row["Categoria"]}_{row["Casa"]}_{row["Ospite"]}', axis=1)
+        df["Time"] = df.apply(lambda row: f'{row["Data"].strftime("%d/%m")} {row["Ora"]}', axis=1)
+        df["Fascia"] = df.apply(lambda row: f'{"🟡" if row["Federazione"].upper() == 'CSI' else "🔵"}{merge_categoria_federazione(row["Categoria"])}', axis=1)
+        df["Selezionato"] = df.apply(lambda row: False, axis=1)
+        df = df.sort_values(by=["Time", "Casa"], ascending=[True, True])
+        return df
 
 
 def handle_change():
@@ -116,85 +119,87 @@ try:
         st.session_state.original_df = load_excel(uploaded_file)
         st.session_state.df_visible  = st.session_state.original_df.copy()
 
-    # 🔹 Salva i vecchi valori (solo la prima volta)
-    for key in ["old_testo", "old_categoria", "old_girone"]:
-        if key not in st.session_state:
-            st.session_state[key] = None
+    if not st.session_state.original_df.empty:
+        # 🔹 Salva i vecchi valori (solo la prima volta)
+        for key in ["old_testo", "old_categoria", "old_girone"]:
+            if key not in st.session_state:
+                st.session_state[key] = None
 
-    # Filtri
-    cols = st.columns([4, 16])
-    with cols[0]:
-        testo_filtrato = st.text_input("Squadra Casa/Ospite", placeholder="", icon="⚽").strip()
-    cols = st.columns([4, 16])
-    with cols[0]:
-        categoria_selezionata = st.selectbox("🔵FIGC 🟡CSI ", options=["Tutte"] + sorted(st.session_state.original_df["Fascia"].dropna().unique()), index=0)
-    # with cols[1]:
-    #     girone_selezionato = st.selectbox("Girone", options=["Tutti"] + sorted(st.session_state.original_df["Girone"].dropna().unique()), index=0)
+        # Filtri
+        cols = st.columns([4, 16])
+        with cols[0]:
+            testo_filtrato = st.text_input("Squadra Casa/Ospite", placeholder="", icon="⚽").strip()
+        cols = st.columns([4, 16])
+        with cols[0]:
+            categoria_selezionata = st.selectbox("🔵FIGC 🟡CSI ", options=["Tutte"] + sorted(st.session_state.original_df["Fascia"].dropna().unique()), index=0)
+        # with cols[1]:
+        #     girone_selezionato = st.selectbox("Girone", options=["Tutti"] + sorted(st.session_state.original_df["Girone"].dropna().unique()), index=0)
 
-    # --- CONTROLLO VARIAZIONI ---
-    filtri_cambiati = (
-        testo_filtrato != st.session_state.old_testo or
-        # girone_selezionato != st.session_state.old_girone or
-        categoria_selezionata != st.session_state.old_categoria
-    )
+        # --- CONTROLLO VARIAZIONI ---
+        filtri_cambiati = (
+            testo_filtrato != st.session_state.old_testo or
+            # girone_selezionato != st.session_state.old_girone or
+            categoria_selezionata != st.session_state.old_categoria
+        )
 
-    if filtri_cambiati:
-        st.session_state.df_visible  = st.session_state.original_df.copy()
-        df_visible = st.session_state.df_visible
-        if testo_filtrato:
-            mask_casa = df_visible["Casa"].astype(str).str.contains(testo_filtrato, case=False, na=False)
-            mask_ospite = df_visible["Ospite"].astype(str).str.contains(testo_filtrato, case=False, na=False)
-            df_visible = df_visible[mask_casa | mask_ospite]
-        
-        if categoria_selezionata != "Tutte":
-            df_visible = df_visible[df_visible["Fascia"] == categoria_selezionata]
+        if filtri_cambiati:
+            st.session_state.df_visible  = st.session_state.original_df.copy()
+            df_visible = st.session_state.df_visible
+            if testo_filtrato:
+                mask_casa = df_visible["Casa"].astype(str).str.contains(testo_filtrato, case=False, na=False)
+                mask_ospite = df_visible["Ospite"].astype(str).str.contains(testo_filtrato, case=False, na=False)
+                df_visible = df_visible[mask_casa | mask_ospite]
+            
+            if categoria_selezionata != "Tutte":
+                df_visible = df_visible[df_visible["Fascia"] == categoria_selezionata]
 
-        # if girone_selezionato != "Tutti":
-        #     df_visible = df_visible[df_visible["Girone"] == girone_selezionato]
+            # if girone_selezionato != "Tutti":
+            #     df_visible = df_visible[df_visible["Girone"] == girone_selezionato]
 
-        # Aggiorna stato e salvataggio dei valori attuali
-        st.session_state.df_visible = df_visible
-        st.session_state.old_testo = testo_filtrato
-        st.session_state.old_categoria = categoria_selezionata
-        # st.session_state.old_girone = girone_selezionato
-    else:
-        df_visible = st.session_state.df_visible
+            # Aggiorna stato e salvataggio dei valori attuali
+            st.session_state.df_visible = df_visible
+            st.session_state.old_testo = testo_filtrato
+            st.session_state.old_categoria = categoria_selezionata
+            # st.session_state.old_girone = girone_selezionato
+        else:
+            df_visible = st.session_state.df_visible
 
-    stop_scrolldown()
-    cols = st.columns([4.5, 6])
-    with cols[0]:
-        with st.container():
-            altezza_per_riga = 35  # px per riga (approssimativa)
-            altezza_massima = 350  # px, per non occupare tutto lo schermo
+        stop_scrolldown()
+        cols = st.columns([4.5, 6])
+        with cols[0]:
+            with st.container():
+                altezza_per_riga = 35  # px per riga (approssimativa)
+                altezza_massima = 350  # px, per non occupare tutto lo schermo
 
-            altezza_calcolata = min(altezza_per_riga * (len(df_visible) + 1), altezza_massima)
-            st.data_editor(
-                data=df_visible,
-                width='stretch',
-                height=altezza_calcolata,
-                column_order = ("Selezionato", "Time", "Casa", "Ospite", "Fascia"),
-                key="match_table",
-                hide_index=True,
-                on_change=handle_change,
-                column_config={
-                    "Selezionato": st.column_config.CheckboxColumn("", width=35, pinned=True),
-                    "Time": st.column_config.TextColumn("Data", disabled=True),
-                    "Casa": st.column_config.TextColumn("Casa", disabled=True),
-                    "Ospite": st.column_config.TextColumn("Ospite", disabled=True),
-                    "Fascia": st.column_config.TextColumn("Fascia", disabled=True),
-                },
-            )
-    st.markdown("</div>", unsafe_allow_html=True)
+                altezza_calcolata = min(altezza_per_riga * (len(df_visible) + 1), altezza_massima)
+                st.data_editor(
+                    data=df_visible,
+                    width='stretch',
+                    height=altezza_calcolata,
+                    column_order = ("Selezionato", "Time", "Casa", "Ospite", "Fascia"),
+                    key="match_table",
+                    hide_index=True,
+                    on_change=handle_change,
+                    column_config={
+                        "Selezionato": st.column_config.CheckboxColumn("", width=35, pinned=True),
+                        "Time": st.column_config.TextColumn("Data", disabled=True),
+                        "Casa": st.column_config.TextColumn("Casa", disabled=True),
+                        "Ospite": st.column_config.TextColumn("Ospite", disabled=True),
+                        "Fascia": st.column_config.TextColumn("Fascia", disabled=True),
+                    },
+                )
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    # Filtra df per mostrare dettagli delle righe selezionate
-    cols = st.columns([4.5, 6])
-    with cols[0]:
-        with st.container():
-            print_match_details(st.session_state.original_df)
+        # Filtra df per mostrare dettagli delle righe selezionate
+        cols = st.columns([4.5, 6])
+        with cols[0]:
+            with st.container():
+                print_match_details(st.session_state.original_df)
 
-    # Genera testo WhatsApp
-    print_wa_code(st.session_state.original_df)
+        # Genera testo WhatsApp
+        print_wa_code(st.session_state.original_df)
 
+    # Link utili
     st.markdown("---")
     st.markdown("🔗*_LINKS VERIFICA DATE DAI SITI UFFICIALI:_*")
     btn_cols = st.columns([0.5, 0.5, 1.5, 13])
