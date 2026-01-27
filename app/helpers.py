@@ -2,6 +2,7 @@ shortcut_categorie = {
     "Giovanissimi": "Giov.",
     "Esordienti": "Esord.",
     "Pulcini": "Pulc.",
+    "MiniPulcini": "MiniPulc.",
 }
 
 def merge_categoria_federazione(categoria):

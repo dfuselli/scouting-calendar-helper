@@ -17,7 +17,10 @@ def merge_excel_sheets(input_file: str, output_file: str):
     all_sheets = pd.read_excel(input_file, sheet_name=None)
 
     # Concatena tutti i DataFrame
-    combined_df = pd.concat(all_sheets.values(), ignore_index=True)
+    combined_df = pd.concat(
+        [df for name, df in all_sheets.items() if name.lower() != "sample"],
+        ignore_index=True
+    )
 
     # Normalizza il testo colonna per colonna
     for col in combined_df.columns:

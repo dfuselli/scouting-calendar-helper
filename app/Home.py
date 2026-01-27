@@ -39,7 +39,7 @@ def load_excel(file_path):
     
     # Filtra per i prossimi 7 giorni
     oggi_mezzanotte = datetime.combine(datetime.today(), time.min)
-    settimana_prossima = oggi_mezzanotte + timedelta(days=7)
+    settimana_prossima = oggi_mezzanotte + timedelta(days=14)
     df = df[(df["Data"] >= oggi_mezzanotte) & (df["Data"] < settimana_prossima)]
 
     
