@@ -39,7 +39,8 @@ def load_excel(file_path):
     
     # Filtra per i prossimi 7 giorni
     oggi_mezzanotte = datetime.combine(datetime.today(), time.min)
-    settimana_prossima = oggi_mezzanotte + timedelta(days=7)
+    stasera_mezzanotte = datetime.combine(datetime.today(), time.max)
+    settimana_prossima = stasera_mezzanotte + timedelta(days=8)
     df = df[(df["Data"] >= oggi_mezzanotte) & (df["Data"] < settimana_prossima)]
 
     
@@ -49,10 +50,11 @@ def load_excel(file_path):
         return df
     else:
         df["ID"] = df.apply(lambda row: f'{row["Data"].strftime("%Y%m%d")}_{row["Categoria"]}_{row["Casa"]}_{row["Ospite"]}', axis=1)
-        df["Time"] = df.apply(lambda row: f'{row["Data"].strftime("%d/%m")} {row["Ora"]}', axis=1)
+        df["_TimeSort"] = pd.to_datetime(df["Data"].dt.strftime("%Y-%m-%d") + " " + df["Ora"])
+        df["Time"] = df["_TimeSort"].dt.strftime("%d/%m %H:%M")
         df["Fascia"] = df.apply(lambda row: f'{"🟡" if row["Federazione"].upper() == 'CSI' else "🔵"}{merge_categoria_federazione(row["Categoria"])}', axis=1)
-        df["Selezionato"] = df.apply(lambda row: False, axis=1)
-        df = df.sort_values(by=["Time", "Casa"], ascending=[True, True])
+        df["Selezionato"] = False
+        df = df.sort_values(by=["_TimeSort", "Casa"], ascending=[True, True]).drop(columns="_TimeSort")
         return df
 
 
