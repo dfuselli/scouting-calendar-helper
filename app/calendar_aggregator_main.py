@@ -51,8 +51,8 @@ def merge_excel_sheets(input_file: str, output_file: str):
     except Exception as e:
         print(f"⚠️ Errore nella normalizzazione della colonna '{target_col}': {e}")
 
-    # Mantiene solo le prime 10 colonne
-    combined_df = combined_df.iloc[:, :10]
+    # Mantiene solo le prime 15 colonne
+    combined_df = combined_df.iloc[:, :15]
 
     # Scrive il risultato in un nuovo file Excel
     combined_df.to_excel(output_file, index=False)

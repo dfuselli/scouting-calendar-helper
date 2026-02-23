@@ -92,7 +92,7 @@ def print_match_details(df):
         st.markdown(f"<p style='margin: 2px 0;'>🏟️{dettagli["Casa"]}&emsp;✈️{dettagli["Ospite"]}</p>", unsafe_allow_html=True)
         st.markdown(f"<p style='margin: 2px 0;'>{dettagli["Fascia"]} &emsp;<strong>Girone:</strong>&nbsp;{dettagli["Girone"]}</p>", unsafe_allow_html=True)
         st.markdown(f"<p style='margin: 2px 0;'>🕒{dettagli["Time"]} &emsp;📅 {dettagli["Giornata"]} {dettagli["A/R"]}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='margin: 2px 0;'>📍{dettagli["Indirizzo"]}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='margin: 2px 0;'>📍{dettagli["Comune"]} - {dettagli["Indirizzo"]}</p>", unsafe_allow_html=True)
     else:
         st.write("Seleziona una riga per vedere i dettagli.")
 
@@ -105,7 +105,8 @@ def print_wa_code(df):
                 f'{row["Categoria"]} {row["Federazione"].upper()} \n'
                 f'{row["Casa"]} - {row["Ospite"]}\n'
                 f'Girone {row["Girone"]}\n'
-                f'{row["Time"]}'
+                f'{row["Time"]}\n'
+                f'{row["Comune"]} - {row["Indirizzo"]}'
             ) 
             testo_wa += "\n\n" + blocco if testo_wa else blocco
 
