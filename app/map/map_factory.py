@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 dark_greens_with_gray0 = [
         (0.00, "#B2AFAF"),  # 0 = grigio
         (0.10, "#4d9d65"),
-        (0.60, "#31a354"),
+        (0.50, "#005723"),
         (1.00, "#005723"),
     ]
 

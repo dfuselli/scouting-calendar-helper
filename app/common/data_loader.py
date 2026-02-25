@@ -31,3 +31,14 @@ def load_calendar_data(filter_next_7_days=True):
         df["Selezionato"] = False
         df = df.sort_values(by=["_TimeSort", "Casa"], ascending=[True, True]).drop(columns="_TimeSort")
         return df
+    
+
+def norm_key(s):
+    return (
+        s.astype("string")
+         .str.replace("\u200b", "", regex=False)     # ZWSP
+         .str.replace("\u00a0", " ", regex=False)    # NBSP
+         .str.replace(r"\s+", " ", regex=True)       # spazi multipli
+         .str.strip()
+         .str.casefold()
+    )
