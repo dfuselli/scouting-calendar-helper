@@ -89,10 +89,10 @@ def print_match_details(df):
     st.markdown("✅*_DETTAGLI PARTITA:_*")
     if st.session_state.get("last_selected_id", None):
         dettagli = df[df["ID"] == st.session_state.get("last_selected_id")].iloc[0]
-        st.markdown(f"<p style='margin: 2px 0;'>🏟️{dettagli["Casa"]}&emsp;✈️{dettagli["Ospite"]}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='margin: 2px 0;'>{dettagli["Fascia"]} &emsp;<strong>Girone:</strong>&nbsp;{dettagli["Girone"]}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='margin: 2px 0;'>🕒{dettagli["Time"]} &emsp;📅 {dettagli["Giornata"]} {dettagli["A/R"]}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='margin: 2px 0;'>📍{dettagli["Comune"]} - {dettagli["Indirizzo"]}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='margin: 2px 0;'>🏟️{dettagli['Casa']}&emsp;-&emsp;{dettagli['Ospite']}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='margin: 2px 0;'>{dettagli['Fascia']}&emsp;🏆{dettagli['Competizione']}&emsp;<strong>Girone:</strong>&nbsp;{dettagli['Girone']}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='margin: 2px 0;'>🕒{dettagli['Time']}&emsp;📅 {dettagli['Giornata']} {dettagli['A/R']}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='margin: 2px 0;'>📍{dettagli['Comune']} - {dettagli['Indirizzo']}</p>", unsafe_allow_html=True)
     else:
         st.write("Seleziona una riga per vedere i dettagli.")
 
@@ -102,11 +102,10 @@ def print_wa_code(df):
         testo_wa = "⚽Programma partite da visionare"
         for _, row in righe_selezionate.iterrows():
             blocco = (
-                f'{row["Categoria"]} {row["Federazione"].upper()} \n'
-                f'{row["Casa"]} - {row["Ospite"]}\n'
-                f'Girone {row["Girone"]}\n'
-                f'{row["Time"]}\n'
-                f'{row["Comune"]} - {row["Indirizzo"]}'
+                f'🏟️{row["Casa"]} - {row["Ospite"]}\n'
+                f'{row['Fascia']} {row["Federazione"].upper()} 🏆{row["Competizione"]} Girone {row["Girone"]}\n'
+                f'🕒{row["Time"]} 📅{row["Giornata"]} {row["A/R"]}\n'
+                f'📍{row["Comune"]} - {row["Indirizzo"]}'
             ) 
             testo_wa += "\n\n" + blocco if testo_wa else blocco
 
