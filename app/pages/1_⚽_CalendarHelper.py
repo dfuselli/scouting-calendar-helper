@@ -1,7 +1,5 @@
-import pandas as pd
 import streamlit as st
-from datetime import datetime, timedelta, time
-from helpers import merge_categoria_federazione
+from common.data_loader import load_calendar_data
 
 # Configura la pagina
 st.set_page_config(page_title="Home", layout="wide")
@@ -17,8 +15,6 @@ hide_streamlit_style = """
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-uploaded_file = "app/resources/AllCalendarsMerged.xlsx"
-
 def stop_scrolldown():
     st.markdown(
                 """
@@ -31,31 +27,6 @@ def stop_scrolldown():
                 """,
                 unsafe_allow_html=True
             )
-    
-@st.cache_data(ttl="15m")
-def load_excel(file_path):
-    df = pd.read_excel(file_path, engine="openpyxl")
-    df["Data"] = pd.to_datetime(df["Data"], format="%d/%m/%Y", errors='coerce')
-    
-    # Filtra per i prossimi 7 giorni
-    oggi_mezzanotte = datetime.combine(datetime.today(), time.min)
-    stasera_mezzanotte = datetime.combine(datetime.today(), time.max)
-    settimana_prossima = stasera_mezzanotte + timedelta(days=8)
-    df = df[(df["Data"] >= oggi_mezzanotte) & (df["Data"] < settimana_prossima)]
-
-    
-    # Aggiungi colonna ID univoco per tracciabilità
-    if df.empty:
-        st.warning("Nessuna partita trovata nei prossimi 7 giorni.")
-        return df
-    else:
-        df["ID"] = df.apply(lambda row: f'{row["Data"].strftime("%Y%m%d")}_{row["Categoria"]}_{row["Casa"]}_{row["Ospite"]}', axis=1)
-        df["_TimeSort"] = pd.to_datetime(df["Data"].dt.strftime("%Y-%m-%d") + " " + df["Ora"])
-        df["Time"] = df["_TimeSort"].dt.strftime("%d/%m %H:%M")
-        df["Fascia"] = df.apply(lambda row: f'{"🟡" if row["Federazione"].upper() == 'CSI' else "🔵"}{merge_categoria_federazione(row["Categoria"])}', axis=1)
-        df["Selezionato"] = False
-        df = df.sort_values(by=["_TimeSort", "Casa"], ascending=[True, True]).drop(columns="_TimeSort")
-        return df
 
 
 def handle_change():
@@ -118,7 +89,7 @@ def print_wa_code(df):
 try:
     # Legge il file Excel
     if "original_df" not in st.session_state:
-        st.session_state.original_df = load_excel(uploaded_file)
+        st.session_state.original_df = load_calendar_data()
         st.session_state.df_visible  = st.session_state.original_df.copy()
 
     if not st.session_state.original_df.empty:
@@ -211,6 +182,7 @@ try:
         st.markdown("[FIGC](https://www.crlombardia.it/comunicati?q=&page=&content_category_value_id=27&delegazioni%5B%5D=13)", unsafe_allow_html=True)
     with btn_cols[2]:
         st.markdown("[TuttoCampo](https://www.tuttocampo.it/Lombardia/BG/)", unsafe_allow_html=True)
+
 except Exception as e:
     st.error(f"Errore nella lettura del file: {e}")
 
