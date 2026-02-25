@@ -4,20 +4,21 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 dark_greens_with_gray0 = [
-    (0.0, "#000000"),
-    (0.1, "#c2e8ce"),
-    (1.00, "#006d2c"),  # verde scuro
-]
+        (0.00, "#B2AFAF"),  # 0 = grigio
+        (0.10, "#4d9d65"),
+        (0.60, "#31a354"),
+        (1.00, "#005723"),
+    ]
 
 def create_map(gdf, df_agg):
     geojson = json.loads(gdf.to_json())
-    mx = max(int(df_agg["n_casa"].max()), 1)
+    mx = max(int(df_agg["n_squadre"].max()), 1)
     fig = px.choropleth_mapbox(
         df_agg,
         geojson=geojson,
         locations="Comune",
         featureidkey="properties.name",
-        color="n_casa",
+        color="n_squadre",
         range_color=(0, mx),
         color_continuous_scale=dark_greens_with_gray0,
         mapbox_style="open-street-map",
@@ -27,7 +28,7 @@ def create_map(gdf, df_agg):
     )
     fig = add_all_boundaries(fig, geojson)
 
-    # Passo al trace dati extra per hover: [Comune, n_casa, case_str]
+    # Passo al trace dati extra per hover: [Comune, n_squadre, case_str]
     fig.update_traces(
         customdata=df_agg[["case_str_hover"]].to_numpy(),
         hovertemplate=(

@@ -1,9 +1,10 @@
+import pandas as pd
 from ui.nav import page_nav
 import streamlit as st
-import plotly.express as px
 from map.data_engine import load_geojson_data
 from map.map_factory import create_map
 from common.data_loader import load_calendar_data
+import json
 
 # Configura la pagina
 st.set_page_config(page_title="Home", layout="wide")
@@ -29,6 +30,10 @@ with top3col:
 # Caricamento dei dati
 try:
     gdf = load_geojson_data()
+    geojson = json.loads(gdf.to_json())
+    geo_comune_names = pd.Series([f["properties"]["name"] for f in geojson["features"]], name="Comune")
+    df_geo = geo_comune_names.to_frame()
+
 except Exception as e:
     st.error(f"Errore durante il caricamento del file GeoJSON: {e}")
     st.stop()
@@ -47,13 +52,26 @@ try:
     df_agg = (
         df_dist.groupby("Comune", as_index=False)
         .agg(
-            n_casa=("Casa", "nunique"),
+            n_squadre=("Casa", "nunique"),
             casa_cat_list=("casa_cat", lambda s: sorted(set(s))),
         )
     )
 
     df_agg["case_str"] = df_agg["casa_cat_list"].apply(lambda xs: "<br>".join(xs))
-    df_agg["case_str_hover"] = df_agg["case_str"].where(df_agg["n_casa"] > 0, "-")
+    df_agg["case_str_hover"] = df_agg["case_str"].where(df_agg["n_squadre"] > 0, "-")
+
+    chk = df_agg[["Comune"]].drop_duplicates().merge(df_geo, on="Comune", how="outer", indicator=True)
+
+    only_in_df = chk[chk["_merge"] == "left_only"]["Comune"].sort_values()
+    only_in_geo = chk[chk["_merge"] == "right_only"]["Comune"].sort_values()
+
+    st.write("Comuni in df_agg NON nel GeoJSON:", only_in_df.tolist())
+    st.write("Comuni nel GeoJSON NON in df_agg:", only_in_geo.tolist())
+
+    df_full = df_geo.merge(df_agg, on="Comune", how="left")
+
+    df_full["n_squadre"] = pd.to_numeric(df_full["n_squadre"], errors="coerce").fillna(0).astype(int)
+    df_full["case_str_hover"] = df_full["case_str_hover"].fillna("-")
 
 except Exception as e:
     st.error(f"Errore durante il caricamento del file Excel: {e}")
@@ -67,14 +85,14 @@ col1, col2 = st.columns([80, 20])
 with col1:
     st.subheader("Mappa")
     try:
-        fig = create_map(gdf, df_agg)
+        fig = create_map(gdf, df_full)
         st.plotly_chart(fig, width='stretch')
     except Exception as e:
         st.error(f"Errore durante la creazione della mappa: {e}")
 
     st.subheader("Aggregati per comune")
     st.dataframe(
-        df_agg.sort_values("n_casa", ascending=False),
+        df_agg.sort_values("n_squadre", ascending=False),
         width='stretch',
         hide_index=True,
     )
