@@ -113,9 +113,9 @@ with col1:
     except Exception as e:
         st.error(f"Errore durante la creazione della mappa: {e}")
 
-    st.subheader("Aggregati per comune")
+    st.subheader("Model DataFrame")
     st.dataframe(
-        df_agg .sort_values("n_squadre", ascending=False),
+        df_view .sort_values("Casa", ascending=False),
         width='stretch',
         hide_index=True,
     )
