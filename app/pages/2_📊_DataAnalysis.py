@@ -49,9 +49,9 @@ except Exception as e:
     st.stop()
 
 ######### Start UI ############
-page_nav()
+#page_nav()
 # Intestazione
-top3col, filter1col, filter2col, filter3col, empty_col = st.columns([8, 5, 4, 5, 5], vertical_alignment="bottom")
+filter1col, filter2col, filter3col, empty_col, top3col = st.columns([5, 4, 5, 5, 8], vertical_alignment="bottom")
 
 with top3col:
     uploaded_file = st.file_uploader(" ", type=["xls"])
@@ -103,7 +103,7 @@ if squadra_sel:
 df_agg = aggregate_by_comune(df_view, df_geo)
 
 # Configurazione layout a due colonne
-col1, col2 = st.columns([60, 40])
+col1, col2 = st.columns([55, 45])
 
 # Visualizzazione mappa
 with col1:
