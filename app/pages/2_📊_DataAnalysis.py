@@ -3,7 +3,7 @@ from ui.nav import page_nav
 import streamlit as st
 from map.data_engine import load_geojson_data
 from map.map_factory import create_map
-from common.data_loader import cleanup_calendar_data, load_calendar_data
+from common.data_loader import cleanup_calendar_data, load_calendar_data,aggregate_by_comune
 import json
 
 # Configura la pagina
@@ -20,12 +20,6 @@ hide_streamlit_style = """
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-page_nav()
-# Intestazione
-top3col, filter1col, filter2col, empty_col = st.columns([4, 2, 2, 5])
-
-with top3col:
-    uploaded_file = st.file_uploader("Carica file .xls", type=["xls"])
 
 # Caricamento dei dati
 try:
@@ -48,28 +42,80 @@ except Exception as e:
 
 try:
     df_calendario = load_calendar_data(filter_next_7_days=False)
-    df_full = cleanup_calendar_data(df_calendario, df_geo)
+    df_cleaned = cleanup_calendar_data(df_calendario)
     
 except Exception as e:
     st.error(f"Errore durante il caricamento del file Excel: {e}")
     st.stop()
 
+######### Start UI ############
+page_nav()
+# Intestazione
+top3col, filter1col, filter2col, filter3col, empty_col = st.columns([8, 5, 4, 5, 5], vertical_alignment="bottom")
+
+with top3col:
+    uploaded_file = st.file_uploader(" ", type=["xls"])
+
+# Filtro per Comune, Categoria, Squadra
+comuni_opts = (
+    df_calendario
+      .dropna(subset=["Comune_casefold"])
+      .sort_values(["Comune_casefold", "Comune"])
+      .drop_duplicates(subset=["Comune_casefold"], keep="first")
+      ["Comune"]
+      .tolist()
+)
+
+cat_opts = (
+    df_cleaned["Categoria"]
+      .dropna()
+      .astype("string")
+      .drop_duplicates()
+      .sort_values(ascending=True)
+      .tolist()
+)
+
+squadra_opts = (
+    df_cleaned["Casa"]
+      .dropna()
+      .astype("string")
+      .drop_duplicates()
+      .sort_values(ascending=True)
+      .tolist()
+)
+
+with filter1col:
+    comuni_sel = st.multiselect("Comune", options=comuni_opts, default=[])
+
+with filter2col:
+    cat_sel = st.multiselect("Categoria", options=cat_opts, default=[])
+
+with filter3col:
+    squadra_sel = st.multiselect("Squadra", options=squadra_opts, default=[])
+
+df_view = df_cleaned.copy()
+if comuni_sel:
+    df_view = df_view[df_view["Comune"].astype(str).isin(comuni_sel)]
+if cat_sel:
+    df_view = df_view[df_view["Categoria"].astype(str).isin(cat_sel)]
+if squadra_sel:
+    df_view = df_view[df_view["Casa"].astype(str).isin(squadra_sel)]
+df_agg = aggregate_by_comune(df_view, df_geo)
 
 # Configurazione layout a due colonne
 col1, col2 = st.columns([80, 20])
 
 # Visualizzazione mappa
 with col1:
-    st.subheader("Mappa")
     try:
-        fig = create_map(gdf, df_full)
+        fig = create_map(gdf, df_agg )
         st.plotly_chart(fig, width='stretch')
     except Exception as e:
         st.error(f"Errore durante la creazione della mappa: {e}")
 
     st.subheader("Aggregati per comune")
     st.dataframe(
-        df_full.sort_values("n_squadre", ascending=False),
+        df_agg .sort_values("n_squadre", ascending=False),
         width='stretch',
         hide_index=True,
     )

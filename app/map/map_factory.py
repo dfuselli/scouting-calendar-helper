@@ -1,12 +1,11 @@
 import json
-from map.constants import BERGAMO_GPS_COORD
+from map.constants import CENTER_GPS_COORD
 import plotly.express as px
 import plotly.graph_objects as go
 
 dark_greens_with_gray0 = [
-        (0.00, "#B2AFAF"),  # 0 = grigio
-        (0.10, "#4d9d65"),
-        (0.50, "#005723"),
+        (0.00, "#BB0000"),  # 0 = grigio
+        (0.01, "#005723"),
         (1.00, "#005723"),
     ]
 
@@ -23,9 +22,10 @@ def create_map(gdf, df_agg):
         color_continuous_scale=dark_greens_with_gray0,
         mapbox_style="open-street-map",
         opacity=0.6,
-        zoom=9,
-        center={"lat": BERGAMO_GPS_COORD[0], "lon": BERGAMO_GPS_COORD[1]},
+        zoom=8.5,
+        center={"lat": CENTER_GPS_COORD[0], "lon": CENTER_GPS_COORD[1]},
     )
+    fig.update_layout(coloraxis_showscale=False)
     fig = add_all_boundaries(fig, geojson)
 
     # Passo al trace dati extra per hover: [Comune, n_squadre, case_str]

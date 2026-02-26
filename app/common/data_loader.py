@@ -32,8 +32,7 @@ def load_calendar_data(filter_next_7_days=True):
         df = df.sort_values(by=["_TimeSort", "Casa"], ascending=[True, True]).drop(columns="_TimeSort")
         return df
     
-
-def cleanup_calendar_data(df_calendario, df_geo):
+def cleanup_calendar_data(df_calendario):
     df_calendario["Comune_casefold"] = (
         df_calendario["Comune"].astype("string")
         .str.replace("\u200b", "", regex=False)   # toglie ZWSP
@@ -52,6 +51,30 @@ def cleanup_calendar_data(df_calendario, df_geo):
 
     df_dist["casa_cat"] = df_dist["Casa"].astype(str) + " (" + df_dist["Categoria"].astype(str) + ")"
 
+    ########################TO DEBUG BAD COMUNE VALUES #####################################
+    # left = (
+    #     df_calendario[["Comune_casefold", "Comune", "Casa", "Categoria"]]
+    #     .dropna(subset=["Comune_casefold", "Casa", "Categoria"])
+    #     .drop_duplicates()
+    # )
+
+    # right = df_geo[["Comune_casefold"]].drop_duplicates()
+
+    # chk = left.merge(right, on="Comune_casefold", how="left", indicator=True)
+
+    # only_in_df = (
+    #     chk[chk["_merge"] == "left_only"]
+    #     .sort_values(["Comune", "Categoria", "Casa"])
+    #     [["Comune", "Comune_casefold", "Categoria", "Casa"]]
+    # )
+
+    # st.write("Righe con Comune NON nel GeoJSON (con Categoria e Casa):")
+    # st.dataframe(only_in_df, width='stretch', hide_index=True)
+    #############################################################
+    return df_dist
+    
+
+def aggregate_by_comune(df_dist, df_geo):
     df_agg = (
         df_dist.groupby("Comune_casefold", as_index=False)
         .agg(
@@ -62,27 +85,6 @@ def cleanup_calendar_data(df_calendario, df_geo):
 
     df_agg["case_str"] = df_agg["casa_cat_list"].apply(lambda xs: "<br>".join(xs))
     df_agg["case_str_hover"] = df_agg["case_str"].where(df_agg["n_squadre"] > 0, "-")
-
-    ########################TO DEBUG BAD COMUNE VALUES #####################################
-    left = (
-        df_calendario[["Comune_casefold", "Comune", "Casa", "Categoria"]]
-        .dropna(subset=["Comune_casefold", "Casa", "Categoria"])
-        .drop_duplicates()
-    )
-
-    right = df_geo[["Comune_casefold"]].drop_duplicates()
-
-    chk = left.merge(right, on="Comune_casefold", how="left", indicator=True)
-
-    only_in_df = (
-        chk[chk["_merge"] == "left_only"]
-        .sort_values(["Comune", "Categoria", "Casa"])
-        [["Comune", "Comune_casefold", "Categoria", "Casa"]]
-    )
-
-    st.write("Righe con Comune NON nel GeoJSON (con Categoria e Casa):")
-    st.dataframe(only_in_df, width='stretch', hide_index=True)
-    #############################################################
 
     df_full = df_geo.merge(df_agg, on="Comune_casefold", how="left")
 
