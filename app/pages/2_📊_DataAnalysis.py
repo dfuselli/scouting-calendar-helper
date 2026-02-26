@@ -103,7 +103,7 @@ if squadra_sel:
 df_agg = aggregate_by_comune(df_view, df_geo)
 
 # Configurazione layout a due colonne
-col1, col2 = st.columns([80, 20])
+col1, col2 = st.columns([60, 40])
 
 # Visualizzazione mappa
 with col1:
@@ -113,14 +113,15 @@ with col1:
     except Exception as e:
         st.error(f"Errore durante la creazione della mappa: {e}")
 
-    st.subheader("Model DataFrame")
-    st.dataframe(
-        df_view .sort_values("Casa", ascending=False),
-        width='stretch',
-        hide_index=True,
-    )
-
 
 # Visualizzazione dati
 with col2:
-    st.subheader("Dati")
+    st.dataframe(
+        df_view
+        .rename(columns={"Casa": "Squadra"})
+        .loc[:, ["Squadra", "Categoria", "Comune"]]
+        .sort_values("Squadra", ascending=True),
+        width="stretch",
+        hide_index=True,
+    )
+
