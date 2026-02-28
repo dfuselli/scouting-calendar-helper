@@ -27,7 +27,7 @@ def load_calendar_data(filter_next_7_days=True):
         df["ID"] = df.apply(lambda row: f'{row["Data"].strftime("%Y%m%d")}_{row["Categoria"]}_{row["Casa"]}_{row["Ospite"]}', axis=1)
         df["_TimeSort"] = pd.to_datetime(df["Data"].dt.strftime("%Y-%m-%d") + " " + df["Ora"])
         df["Time"] = df["_TimeSort"].dt.strftime("%d/%m %H:%M")
-        df["Fascia"] = df.apply(lambda row: f'{"🟡" if row["Federazione"].upper() == 'CSI' else "🔵"}{merge_categoria_federazione(row["Categoria"])}', axis=1)
+        df["Fascia"] = df.apply(lambda row: f'{"🟡" if "CSI" in row["Federazione"].upper() else "🔵"}{merge_categoria_federazione(row["Categoria"])}', axis=1)
         df["Selezionato"] = False
         df = df.sort_values(by=["_TimeSort", "Casa"], ascending=[True, True]).drop(columns="_TimeSort")
         return df
