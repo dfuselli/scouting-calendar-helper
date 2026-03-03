@@ -49,7 +49,7 @@ except Exception as e:
     st.stop()
 
 ######### Start UI ############
-#page_nav()
+page_nav()
 # Intestazione
 filter1col, filter2col, filter3col, empty_col, top3col = st.columns([5, 4, 5, 5, 8], vertical_alignment="bottom")
 

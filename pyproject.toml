@@ -10,6 +10,7 @@ dependencies = [
     "plotly==6.5.2",
     "unidecode==1.4.0",
     "geopandas==1.1.2",
+    "xlrd==2.0.2",
 ]
 
 [dependency-groups]

@@ -1,7 +1,8 @@
 import streamlit as st
 
-home = st.Page("./pages/1_⚽_CalendarHelper.py", title="Calendar Helper")
-settings = st.Page("./pages/2_📊_DataAnalysis.py", title="Data Analysis")
+calendar = st.Page("./pages/1_⚽_CalendarHelper.py", title="Calendar Helper")
+competitions = st.Page("./pages/2_📊_CompetitionAnalysis.py", title="Competition Analysis")
+match = st.Page("./pages/3_📊_MatchAnalysis.py", title="Match Analysis")
 
-pg = st.navigation([home, settings], position="hidden")
+pg = st.navigation([calendar, competitions, match], position="hidden")
 pg.run()

@@ -1,4 +1,5 @@
 import streamlit as st
+from ui.nav import page_nav
 from common.data_loader import load_calendar_data
 
 # Configura la pagina
@@ -186,3 +187,4 @@ try:
 except Exception as e:
     st.error(f"Errore nella lettura del file: {e}")
 
+page_nav()
