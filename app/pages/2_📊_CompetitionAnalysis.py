@@ -51,10 +51,7 @@ except Exception as e:
 ######### Start UI ############
 page_nav()
 # Intestazione
-filter1col, filter2col, filter3col, empty_col, top3col = st.columns([5, 4, 5, 5, 8], vertical_alignment="bottom")
-
-with top3col:
-    uploaded_file = st.file_uploader(" ", type=["xls"])
+filter1col, filter2col, filter3col, empty_col = st.columns([5, 4, 5, 13], vertical_alignment="bottom")
 
 # Filtro per Comune, Categoria, Squadra
 comuni_opts = (

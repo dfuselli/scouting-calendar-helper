@@ -113,10 +113,11 @@ if match_data is not None and not match_data.empty:
 else:
     filtered_df = None
 
-date_ok = filtered_df["Data"].dropna()
-first_date = date_ok.min()
-last_date  = date_ok.max()
-st.caption(f"Periodo: {first_date:%d/%m/%Y} → {last_date:%d/%m/%Y}")
+if filtered_df is not None and not filtered_df.empty:
+    date_ok = filtered_df["Data"].dropna()
+    first_date = date_ok.min()
+    last_date  = date_ok.max()
+    st.caption(f"Periodo: {first_date:%d/%m/%Y} → {last_date:%d/%m/%Y}")
 # Configurazione layout a due colonne
 col1, col2 = st.columns([50, 50])
 
@@ -164,7 +165,7 @@ with col1:
         fig3 = px.imshow(pivot, aspect="auto", title="Densità match: giorno della settimana x ora")  # heatmap [web:181]
         st.plotly_chart(fig3, width='stretch')
     else:
-        st.info("Nessun dato da mostrare.")
+        st.info("Carica il file Excel di Weak Risk con i dati dei match per visualizzare le analisi.")
 
 with col2:
     if filtered_df is not None and not filtered_df.empty:
