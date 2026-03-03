@@ -73,10 +73,10 @@ def print_wa_code(df):
         testo_wa = "⚽Programma partite da visionare"
         for _, row in righe_selezionate.iterrows():
             blocco = (
-                f'🏟️{row["Casa"]} - {row["Ospite"]}\n'
-                f'{row['Fascia']} {row["Federazione"].upper()} 🏆{row["Competizione"]} Girone {row["Girone"]}\n'
+                f'🏟️{row["Casa"]}-{row["Ospite"]}\n'
+                f'{row['Fascia']} {row["Federazione"].upper()} 🏆{row["Competizione"]} Gir. {row["Girone"]}\n'
                 f'🕒{row["Time"]} 📅{int(row["Giornata"])} {row["A/R"]}\n'
-                f'📍{row["Comune"]} - {row["Indirizzo"]}'
+                f'📍{row["Comune"].strip()}-{row["Indirizzo"]}'
             ) 
             testo_wa += "\n\n" + blocco if testo_wa else blocco
 
