@@ -123,15 +123,13 @@ with col2:
     )
 
 
-st.header("Import/Export Database")
-col1, col2, col3 = st.columns([15,15,70], vertical_alignment="center")
-with col1:
-    export_db("📤 Esporta DB su PC/Drive")
+with st.expander("📤 Esporta"):
+    export_db("📤 Download DB su PC -> Update Manuale su GDrive")
 
-with col2:
-    uploaded_file = st.file_uploader(" ", type=["xlsx"])
-
-with col3:
+with st.expander("⬆️ Importa"):
+    col1, col2 = st.columns([30, 70])
+    with col1:
+        uploaded_file = st.file_uploader(" ", type=["xlsx"])
     if uploaded_file is not None:
         df_excel = pd.read_excel(uploaded_file, engine="openpyxl")
         df_useful_columns = df_excel.iloc[:, :13]
