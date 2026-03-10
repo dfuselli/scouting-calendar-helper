@@ -2,7 +2,7 @@ import pandas as pd
 import xlrd
 from ui.nav import page_nav
 import streamlit as st
-from common.data_loader import cleanup_calendar_data, load_calendar_data
+from common.data_handler import cleanup_calendar_data, load_calendar_data
 import numpy as np
 import plotly.express as px
 

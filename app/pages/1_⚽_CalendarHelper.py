@@ -1,6 +1,6 @@
 import streamlit as st
 from ui.nav import page_nav
-from common.data_loader import load_calendar_data
+from common.data_handler import load_calendar_data
 
 # Configura la pagina
 st.set_page_config(page_title="Home", layout="wide")

@@ -3,7 +3,7 @@ from ui.nav import page_nav
 import streamlit as st
 from map.data_engine import load_geojson_data
 from map.map_factory import create_map
-from common.data_loader import cleanup_calendar_data, load_calendar_data,aggregate_by_comune
+from common.data_handler import cleanup_calendar_data, load_calendar_data_from_db,aggregate_by_comune, add_matches_to_db, download_db, export_db
 import json
 
 # Configura la pagina
@@ -41,7 +41,7 @@ except Exception as e:
     st.stop()
 
 try:
-    df_calendario = load_calendar_data(filter_next_7_days=False)
+    df_calendario = load_calendar_data_from_db(filter_next_7_days=False)
     df_cleaned = cleanup_calendar_data(df_calendario)
     
 except Exception as e:
@@ -122,3 +122,20 @@ with col2:
         hide_index=True,
     )
 
+
+st.subheader("Importa partite da Excel")
+col1, col2 = st.columns([15, 85])
+with col1:
+    uploaded_file = st.file_uploader("Carica file Excel", type=["xlsx"])
+
+if uploaded_file is not None:
+    df_excel = pd.read_excel(uploaded_file, engine="openpyxl")
+    df_useful_columns = df_excel.iloc[:, :13]
+    if st.button("Importa in database {} rows".format(len(df_useful_columns))):
+        add_matches_to_db(df_useful_columns)
+    st.dataframe(
+        df_useful_columns.head(),
+        width="stretch",
+        hide_index=True)
+
+export_db()
