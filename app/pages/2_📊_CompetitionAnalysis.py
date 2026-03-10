@@ -123,19 +123,29 @@ with col2:
     )
 
 
-st.subheader("Importa partite da Excel")
-col1, col2 = st.columns([15, 85])
+st.header("Import/Export Database")
+col1, col2, col3 = st.columns([15,15,70], vertical_alignment="center")
 with col1:
-    uploaded_file = st.file_uploader("Carica file Excel", type=["xlsx"])
+    export_db("📤 Esporta DB su PC/Drive")
 
-if uploaded_file is not None:
-    df_excel = pd.read_excel(uploaded_file, engine="openpyxl")
-    df_useful_columns = df_excel.iloc[:, :13]
-    if st.button("Importa in database {} rows".format(len(df_useful_columns))):
-        add_matches_to_db(df_useful_columns)
-    st.dataframe(
-        df_useful_columns.head(),
-        width="stretch",
-        hide_index=True)
+with col2:
+    uploaded_file = st.file_uploader(" ", type=["xlsx"])
 
-export_db()
+with col3:
+    if uploaded_file is not None:
+        df_excel = pd.read_excel(uploaded_file, engine="openpyxl")
+        df_useful_columns = df_excel.iloc[:, :13]
+        if st.button("Importa in database {} rows".format(len(df_useful_columns))):
+            add_matches_to_db(df_useful_columns)
+        st.dataframe(
+            df_useful_columns.head(),
+            width="stretch",
+            hide_index=True)
+
+
+st.header("Partite Campionato")
+st.dataframe(
+    df_calendario,
+    width="stretch",
+    hide_index=True,
+)

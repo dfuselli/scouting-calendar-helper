@@ -20,10 +20,9 @@ def download_db():
 
 db_path = download_db()
 
-def export_db():  # Solo se hai API key
-    st.warning("Update manuale: scarica → salva su Drive")
+def export_db(text):
     with open(db_path, "rb") as f:
-        st.download_button("📤 Salva DB su PC/Drive", f.read(), "scouting_assistant.db")
+        st.download_button(text, f.read(), "scouting_assistant.db")
 
 # Crea tabella se non esiste
 def init_db():
