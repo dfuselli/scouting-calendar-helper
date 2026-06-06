@@ -1,7 +1,7 @@
 # home.py
 import streamlit as st
-from ui.nav import page_nav
 from common.data_handler import load_calendar_data
+from ui.nav import page_nav
 
 # ── Costanti ────────────────────────────────────────────────────────────────
 PAGE_TITLE = "Home"
@@ -21,9 +21,12 @@ HIDE_STREAMLIT_UI = """
 """
 
 LINKS = [
-    ("CSI",         "https://live.centrosportivoitaliano.it/25/Lombardia/Bergamo"),
-    ("FIGC",        "https://www.crlombardia.it/comunicati?q=&page=&content_category_value_id=27&delegazioni%5B%5D=13"),
-    ("TuttoCampo",  "https://www.tuttocampo.it/Lombardia/BG/"),
+    ("CSI", "https://live.centrosportivoitaliano.it/25/Lombardia/Bergamo"),
+    (
+        "FIGC",
+        "https://www.crlombardia.it/comunicati?q=&page=&content_category_value_id=27&delegazioni%5B%5D=13",
+    ),
+    ("TuttoCampo", "https://www.tuttocampo.it/Lombardia/BG/"),
 ]
 
 # ── Page config ──────────────────────────────────────────────────────────────
@@ -47,10 +50,9 @@ def _apply_filters(testo: str, categoria: str):
     df = st.session_state.original_df.copy()
 
     if testo:
-        mask = (
-            df["Casa"].astype(str).str.contains(testo, case=False, na=False)
-            | df["Ospite"].astype(str).str.contains(testo, case=False, na=False)
-        )
+        mask = df["Casa"].astype(str).str.contains(testo, case=False, na=False) | df[
+            "Ospite"
+        ].astype(str).str.contains(testo, case=False, na=False)
         df = df[mask]
 
     if categoria != "Tutte":
@@ -102,10 +104,10 @@ def _render_table(df_visible) -> None:
         on_change=_handle_change,
         column_config={
             "Selezionato": st.column_config.CheckboxColumn("", width=35, pinned=True),
-            "Time":        st.column_config.TextColumn("Data",   disabled=True),
-            "Casa":        st.column_config.TextColumn("Casa",   disabled=True),
-            "Ospite":      st.column_config.TextColumn("Ospite", disabled=True),
-            "Fascia":      st.column_config.TextColumn("Fascia", disabled=True),
+            "Time": st.column_config.TextColumn("Data", disabled=True),
+            "Casa": st.column_config.TextColumn("Casa", disabled=True),
+            "Ospite": st.column_config.TextColumn("Ospite", disabled=True),
+            "Fascia": st.column_config.TextColumn("Fascia", disabled=True),
         },
     )
 
@@ -124,10 +126,22 @@ def _render_match_details(df) -> None:
         return
 
     d = row.iloc[0]
-    st.markdown(f"<p style='margin:2px 0'>🏟️ {d['Casa']} &emsp;-&emsp; {d['Ospite']}</p>", unsafe_allow_html=True)
-    st.markdown(f"<p style='margin:2px 0'>{d['Fascia']} &emsp;🏆 {d['Competizione']} &emsp;<strong>Girone:</strong>&nbsp;{d['Girone']}</p>", unsafe_allow_html=True)
-    st.markdown(f"<p style='margin:2px 0'>🕒 {d['Time']} &emsp;📅 {int(d['Giornata'])} {d['A/R']}</p>", unsafe_allow_html=True)
-    st.markdown(f"<p style='margin:2px 0'>📍 {d['Comune']} - {d['Indirizzo']}</p>", unsafe_allow_html=True)
+    st.markdown(
+        f"<p style='margin:2px 0'>🏟️ {d['Casa']} &emsp;-&emsp; {d['Ospite']}</p>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        f"<p style='margin:2px 0'>{d['Fascia']} &emsp;🏆 {d['Competizione']} &emsp;<strong>Girone:</strong>&nbsp;{d['Girone']}</p>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        f"<p style='margin:2px 0'>🕒 {d['Time']} &emsp;📅 {int(d['Giornata'])} {d['A/R']}</p>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        f"<p style='margin:2px 0'>📍 {d['Comune']} - {d['Indirizzo']}</p>",
+        unsafe_allow_html=True,
+    )
 
 
 def _render_wa_code(df) -> None:

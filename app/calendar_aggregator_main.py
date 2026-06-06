@@ -1,12 +1,15 @@
-import pandas as pd
 import os
+
+import pandas as pd
+
 
 def normalize_text(value):
     """Normalizza il testo rendendolo capitalizzato correttamente."""
     if isinstance(value, str):
         # Rimuove spazi extra e capitalizza ogni parola
-        return ' '.join(word.capitalize() for word in value.strip().split())
+        return " ".join(word.capitalize() for word in value.strip().split())
     return value
+
 
 def merge_excel_sheets(input_file: str, output_file: str):
     """
@@ -19,7 +22,7 @@ def merge_excel_sheets(input_file: str, output_file: str):
     # Concatena tutti i DataFrame
     combined_df = pd.concat(
         [df for name, df in all_sheets.items() if name.lower() != "sample"],
-        ignore_index=True
+        ignore_index=True,
     )
 
     # Normalizza il testo colonna per colonna
@@ -32,8 +35,8 @@ def merge_excel_sheets(input_file: str, output_file: str):
         combined_df[first_col] = pd.to_datetime(
             combined_df[first_col],
             dayfirst=True,
-            errors='coerce'  # mette NaT se non riesce a convertire
-        ).dt.strftime('%d/%m/%Y')
+            errors="coerce",  # mette NaT se non riesce a convertire
+        ).dt.strftime("%d/%m/%Y")
     except Exception as e:
         print(f"⚠️ Errore nella normalizzazione della colonna data '{first_col}': {e}")
 
@@ -45,8 +48,9 @@ def merge_excel_sheets(input_file: str, output_file: str):
             if pd.isna(x):
                 return x
             x = str(x)
-            x_pulito = ':'.join(x.split(':')[:2])
+            x_pulito = ":".join(x.split(":")[:2])
             return x_pulito
+
         combined_df[target_col] = combined_df[target_col].apply(pulisci_valore)
     except Exception as e:
         print(f"⚠️ Errore nella normalizzazione della colonna '{target_col}': {e}")
@@ -61,7 +65,9 @@ def merge_excel_sheets(input_file: str, output_file: str):
 
 
 def main():
-    input_path = "resources/AllCalendars.xlsx"   # <-- metti qui il nome del file di input
+    input_path = (
+        "resources/AllCalendars.xlsx"  # <-- metti qui il nome del file di input
+    )
     output_path = "resources/AllCalendarsMerged.xlsx"
 
     if not os.path.exists(input_path):

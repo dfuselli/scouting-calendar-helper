@@ -1,8 +1,8 @@
 import geopandas as gpd
-import pandas as pd
 import streamlit as st
 import unidecode
 from streamlit.runtime.uploaded_file_manager import UploadedFile
+
 
 def normalize_key(key):
     return unidecode.unidecode(key.lower()).replace(" ", "")
@@ -23,5 +23,5 @@ def read_xls(file: UploadedFile):
 
 @st.cache_data
 def get_coordinates(team):
-    gdf = load_geojson_data()
+    load_geojson_data()
     return "Bergamo"

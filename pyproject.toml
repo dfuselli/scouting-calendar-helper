@@ -17,4 +17,10 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pre-commit==4.6.0",
+    "ruff==0.15.16",
+    "ty==0.0.44",
 ]
+
+[tool.ty.environment]
+# Aggiungi la cartella app come source root
+root = ["app"]
