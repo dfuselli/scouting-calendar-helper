@@ -109,8 +109,7 @@ def _apply_filters(
     return df[mask]
 
 
-# ── Fragment UI ──────────────────────────────────────────────────────────────
-@st.fragment
+# ──  UI ──────────────────────────────────────────────────────────────
 def _render_filter_panel(options: dict) -> tuple[list, list, list]:
     """Renderizza i filtri. Reruns indipendente dal resto della pagina."""
     col1, col2, col3, _ = st.columns(FILTER_COLS, vertical_alignment="bottom")
@@ -127,7 +126,6 @@ def _render_filter_panel(options: dict) -> tuple[list, list, list]:
     return comuni_sel, cat_sel, squadra_sel
 
 
-@st.fragment
 def _render_map(gdf: pd.DataFrame, df_agg: pd.DataFrame) -> None:
     """Renderizza la mappa. Reruns indipendente dai filtri nella tabella."""
     col1, col2 = st.columns([LAYOUT_MAP, LAYOUT_TABLE])
@@ -204,14 +202,14 @@ def main() -> None:
     # Opzioni filtri
     options = _build_filter_options(df_cleaned)
 
-    # Filtri interattivi (fragment)
+    # Filtri interattivi
     comuni_sel, cat_sel, squadra_sel = _render_filter_panel(options)
 
     # Applicazione filtri
     df_view = _apply_filters(df_cleaned, comuni_sel, cat_sel, squadra_sel)
     df_agg = aggregate_by_comune(df_view, df_geo)
 
-    # Mappa e tabella (fragment)
+    # Mappa e tabella
     _render_map(gdf, df_agg)
 
     # Export / Import

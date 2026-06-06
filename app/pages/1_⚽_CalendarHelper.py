@@ -1,6 +1,7 @@
 # home.py
 import streamlit as st
 from common.data_handler import load_calendar_data
+from ui.common import add_markdown_divider
 from ui.nav import page_nav
 
 # ── Costanti ────────────────────────────────────────────────────────────────
@@ -88,11 +89,12 @@ def _handle_change() -> None:
             ):
                 st.session_state.last_selected_id = row_id
 
+            else:
+                st.session_state.last_selected_id = None
+
 
 # ── Componenti UI ─────────────────────────────────────────────────────────────
-@st.fragment
 def _render_table(df_visible) -> None:
-    """Renderizza il data_editor in un fragment per limitare i re-render."""
     height = min(ROW_HEIGHT_PX * (len(df_visible) + 1), MAX_TABLE_HEIGHT_PX)
     st.data_editor(
         data=df_visible,
@@ -113,6 +115,7 @@ def _render_table(df_visible) -> None:
 
 
 def _render_match_details(df) -> None:
+    add_markdown_divider()
     st.markdown("✅ *_DETTAGLI PARTITA:_*")
     selected_id = st.session_state.last_selected_id
 
@@ -160,7 +163,7 @@ def _render_wa_code(df) -> None:
 
     testo_wa = "⚽Programma partite da visionare\n\n" + "\n\n".join(righe)
 
-    st.markdown("---")
+    add_markdown_divider()
     col, _ = st.columns([6, 8])
     with col:
         st.markdown("✅ *_TESTO PER INVIO PROGRAMMA VIA WHATSAPP:_*")
@@ -168,7 +171,7 @@ def _render_wa_code(df) -> None:
 
 
 def _render_links() -> None:
-    st.markdown("---")
+    add_markdown_divider()
     st.markdown("🔗 *_LINKS VERIFICA DATE DAI SITI UFFICIALI:_*")
     cols = st.columns([0.5] * len(LINKS) + [13 - 0.5 * len(LINKS)])
     for col, (label, url) in zip(cols, LINKS):
@@ -201,10 +204,11 @@ def main() -> None:
     df_visible = st.session_state.df_visible
 
     col_table, _ = st.columns([4.5, 6])
+    col_details, _ = st.columns([4.5, 6])
+
     with col_table:
         _render_table(df_visible)
 
-    col_details, _ = st.columns([4.5, 6])
     with col_details:
         _render_match_details(st.session_state.original_df)
 
