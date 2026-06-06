@@ -28,10 +28,12 @@ repos:
       # Run the formatter.
       - id: ruff-format
 
-  # Mypy - controllo statico dei tipi
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v2.1.0
+  # Ty - controllo statico dei tipi
+  - repo: local
     hooks:
-      - id: mypy
-        additional_dependencies: ["pandas", "openpyxl"]
-        args: ["--ignore-missing-imports", "--pretty"]
+      - id: ty
+        name: ty type check
+        entry: uv run ty check
+        language: system
+        types: [python]
+        pass_filenames: true
