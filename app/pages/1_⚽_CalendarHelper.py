@@ -1,190 +1,208 @@
+# home.py
 import streamlit as st
 from ui.nav import page_nav
 from common.data_handler import load_calendar_data
 
-# Configura la pagina
-st.set_page_config(page_title="Home", layout="wide")
-st.write("<style>div.block-container{padding-top:0.5rem;}</style>", unsafe_allow_html=True)
+# ── Costanti ────────────────────────────────────────────────────────────────
+PAGE_TITLE = "Home"
+ROW_HEIGHT_PX = 35
+MAX_TABLE_HEIGHT_PX = 350
+COLUMN_ORDER = ("Selezionato", "Time", "Casa", "Ospite", "Fascia")
 
-# CSS per nascondere la topbar e il footer
-hide_streamlit_style = """
-    <style>
-        #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-        header {visibility: hidden;}
-    </style>
+HIDE_STREAMLIT_UI = """
+<style>
+    #MainMenu, footer, header { visibility: hidden; }
+    div.block-container { padding-top: 0.5rem; }
+    div[data-testid="stDataFrameContainer"] {
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+</style>
 """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-def stop_scrolldown():
-    st.markdown(
-                """
-                <style>
-                div[data-testid="stDataFrameContainer"] {
-                    overflow-y: auto;  /* permette solo scroll interno */
-                    overscroll-behavior: contain;  /* evita propagazione momentum */
-                }
-                </style>
-                """,
-                unsafe_allow_html=True
-            )
+LINKS = [
+    ("CSI",         "https://live.centrosportivoitaliano.it/25/Lombardia/Bergamo"),
+    ("FIGC",        "https://www.crlombardia.it/comunicati?q=&page=&content_category_value_id=27&delegazioni%5B%5D=13"),
+    ("TuttoCampo",  "https://www.tuttocampo.it/Lombardia/BG/"),
+]
+
+# ── Page config ──────────────────────────────────────────────────────────────
+st.set_page_config(page_title=PAGE_TITLE, layout="wide")
+st.markdown(HIDE_STREAMLIT_UI, unsafe_allow_html=True)
 
 
-def handle_change():
+# ── Session state ────────────────────────────────────────────────────────────
+def _init_session_state() -> None:
+    """Inizializza lo stato della sessione se non già presente."""
+    if "original_df" not in st.session_state:
+        st.session_state.original_df = load_calendar_data()
+        st.session_state.df_visible = st.session_state.original_df.copy()
+    if "last_selected_id" not in st.session_state:
+        st.session_state.last_selected_id = None
 
-    changes = st.session_state["match_table"]
+
+# ── Logica filtri ─────────────────────────────────────────────────────────────
+def _apply_filters(testo: str, categoria: str):
+    """Restituisce il DataFrame filtrato senza effetti collaterali su session_state."""
+    df = st.session_state.original_df.copy()
+
+    if testo:
+        mask = (
+            df["Casa"].astype(str).str.contains(testo, case=False, na=False)
+            | df["Ospite"].astype(str).str.contains(testo, case=False, na=False)
+        )
+        df = df[mask]
+
+    if categoria != "Tutte":
+        df = df[df["Fascia"] == categoria]
+
+    return df
+
+
+# ── Callback data_editor ──────────────────────────────────────────────────────
+def _handle_change() -> None:
+    changes = st.session_state.get("match_table", {})
+    edited_rows = changes.get("edited_rows", {})
+    if not edited_rows:
+        return
+
     df = st.session_state.original_df
+    df_visible = st.session_state.df_visible
 
-    if "edited_rows" not in changes:
-            return
-    
-    for row_index_str, row_changes in changes["edited_rows"].items():
+    for row_index_str, row_changes in edited_rows.items():
         row_index = int(row_index_str)
-
-        # Ottieni l'ID dalla riga visibile
-        df_visible = st.session_state.df_visible  # df visibile nel momento della modifica
         row_id = df_visible.iloc[row_index]["ID"]
-
-        # Trova la riga corrispondente nell'original_df
         df_row_index = df[df["ID"] == row_id].index[0]
 
         for col, new_value in row_changes.items():
             old_value = df.at[df_row_index, col]
             df.at[df_row_index, col] = new_value
 
-            if col == "Selezionato" and new_value is True and old_value != True:
-                if st.session_state.get("last_selected_id") != df.at[df_row_index, "ID"]:
-                    st.session_state["last_selected_id"] = df.at[df_row_index, "ID"]
+            if (
+                col == "Selezionato"
+                and new_value is True
+                and old_value is not True
+                and st.session_state.last_selected_id != row_id
+            ):
+                st.session_state.last_selected_id = row_id
 
 
-def print_match_details(df):
-    st.markdown("✅*_DETTAGLI PARTITA:_*")
-    if st.session_state.get("last_selected_id", None):
-        dettagli = df[df["ID"] == st.session_state.get("last_selected_id")].iloc[0]
-        st.markdown(f"<p style='margin: 2px 0;'>🏟️{dettagli['Casa']}&emsp;-&emsp;{dettagli['Ospite']}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='margin: 2px 0;'>{dettagli['Fascia']}&emsp;🏆{dettagli['Competizione']}&emsp;<strong>Girone:</strong>&nbsp;{dettagli['Girone']}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='margin: 2px 0;'>🕒{dettagli['Time']}&emsp;📅 {int(dettagli['Giornata'])} {dettagli['A/R']}</p>", unsafe_allow_html=True)
-        st.markdown(f"<p style='margin: 2px 0;'>📍{dettagli['Comune']} - {dettagli['Indirizzo']}</p>", unsafe_allow_html=True)
-    else:
+# ── Componenti UI ─────────────────────────────────────────────────────────────
+@st.fragment
+def _render_table(df_visible) -> None:
+    """Renderizza il data_editor in un fragment per limitare i re-render."""
+    height = min(ROW_HEIGHT_PX * (len(df_visible) + 1), MAX_TABLE_HEIGHT_PX)
+    st.data_editor(
+        data=df_visible,
+        width="stretch",
+        height=height,
+        column_order=COLUMN_ORDER,
+        key="match_table",
+        hide_index=True,
+        on_change=_handle_change,
+        column_config={
+            "Selezionato": st.column_config.CheckboxColumn("", width=35, pinned=True),
+            "Time":        st.column_config.TextColumn("Data",   disabled=True),
+            "Casa":        st.column_config.TextColumn("Casa",   disabled=True),
+            "Ospite":      st.column_config.TextColumn("Ospite", disabled=True),
+            "Fascia":      st.column_config.TextColumn("Fascia", disabled=True),
+        },
+    )
+
+
+def _render_match_details(df) -> None:
+    st.markdown("✅ *_DETTAGLI PARTITA:_*")
+    selected_id = st.session_state.last_selected_id
+
+    if not selected_id:
         st.write("Seleziona una riga per vedere i dettagli.")
+        return
 
-def print_wa_code(df):
-    righe_selezionate =  df[df["Selezionato"]]
-    if not righe_selezionate.empty:
-        testo_wa = "⚽Programma partite da visionare"
-        for _, row in righe_selezionate.iterrows():
-            blocco = (
-                f'🏟️{row["Casa"]}-{row["Ospite"]}\n'
-                f'{row['Fascia']} {row["Federazione"].upper()} 🏆{row["Competizione"]} Gir. {row["Girone"]}\n'
-                f'🕒{row["Time"]} 📅{int(row["Giornata"])} {row["A/R"]}\n'
-                f'📍{row["Comune"].strip()}-{row["Indirizzo"]}'
-            ) 
-            testo_wa += "\n\n" + blocco if testo_wa else blocco
+    row = df[df["ID"] == selected_id]
+    if row.empty:
+        st.write("Partita non trovata.")
+        return
 
-        st.markdown("---")
-        wa_cols = st.columns([6, 8])
-        with wa_cols[0]:
-            st.markdown("✅*_TESTO PER INVIO PROGRAMMA VIA WHATSAPP:_*")
-            st.code(testo_wa, language=None)
+    d = row.iloc[0]
+    st.markdown(f"<p style='margin:2px 0'>🏟️ {d['Casa']} &emsp;-&emsp; {d['Ospite']}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='margin:2px 0'>{d['Fascia']} &emsp;🏆 {d['Competizione']} &emsp;<strong>Girone:</strong>&nbsp;{d['Girone']}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='margin:2px 0'>🕒 {d['Time']} &emsp;📅 {int(d['Giornata'])} {d['A/R']}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='margin:2px 0'>📍 {d['Comune']} - {d['Indirizzo']}</p>", unsafe_allow_html=True)
 
-try:
-    # Legge il file Excel
-    if "original_df" not in st.session_state:
-        st.session_state.original_df = load_calendar_data()
-        st.session_state.df_visible  = st.session_state.original_df.copy()
 
-    if not st.session_state.original_df.empty:
-        # 🔹 Salva i vecchi valori (solo la prima volta)
-        for key in ["old_testo", "old_categoria", "old_girone"]:
-            if key not in st.session_state:
-                st.session_state[key] = None
+def _render_wa_code(df) -> None:
+    selected = df[df["Selezionato"]]
+    if selected.empty:
+        return
 
-        # Filtri
-        cols = st.columns([4, 16])
-        with cols[0]:
-            testo_filtrato = st.text_input("Squadra Casa/Ospite", placeholder="", icon="⚽").strip()
-        cols = st.columns([4, 16])
-        with cols[0]:
-            categoria_selezionata = st.selectbox("🔵FIGC 🟡CSI ", options=["Tutte"] + sorted(st.session_state.original_df["Fascia"].dropna().unique()), index=0)
-        # with cols[1]:
-        #     girone_selezionato = st.selectbox("Girone", options=["Tutti"] + sorted(st.session_state.original_df["Girone"].dropna().unique()), index=0)
-
-        # --- CONTROLLO VARIAZIONI ---
-        filtri_cambiati = (
-            testo_filtrato != st.session_state.old_testo or
-            # girone_selezionato != st.session_state.old_girone or
-            categoria_selezionata != st.session_state.old_categoria
+    righe = []
+    for _, row in selected.iterrows():
+        righe.append(
+            f"🏟️{row['Casa']}-{row['Ospite']}\n"
+            f"{row['Fascia']} {row['Federazione'].upper()} 🏆{row['Competizione']} Gir. {row['Girone']}\n"
+            f"🕒{row['Time']} 📅{int(row['Giornata'])} {row['A/R']}\n"
+            f"📍{row['Comune'].strip()}-{row['Indirizzo']}"
         )
 
-        if filtri_cambiati:
-            st.session_state.df_visible  = st.session_state.original_df.copy()
-            df_visible = st.session_state.df_visible
-            if testo_filtrato:
-                mask_casa = df_visible["Casa"].astype(str).str.contains(testo_filtrato, case=False, na=False)
-                mask_ospite = df_visible["Ospite"].astype(str).str.contains(testo_filtrato, case=False, na=False)
-                df_visible = df_visible[mask_casa | mask_ospite]
-            
-            if categoria_selezionata != "Tutte":
-                df_visible = df_visible[df_visible["Fascia"] == categoria_selezionata]
+    testo_wa = "⚽Programma partite da visionare\n\n" + "\n\n".join(righe)
 
-            # if girone_selezionato != "Tutti":
-            #     df_visible = df_visible[df_visible["Girone"] == girone_selezionato]
-
-            # Aggiorna stato e salvataggio dei valori attuali
-            st.session_state.df_visible = df_visible
-            st.session_state.old_testo = testo_filtrato
-            st.session_state.old_categoria = categoria_selezionata
-            # st.session_state.old_girone = girone_selezionato
-        else:
-            df_visible = st.session_state.df_visible
-
-        stop_scrolldown()
-        cols = st.columns([4.5, 6])
-        with cols[0]:
-            with st.container():
-                altezza_per_riga = 35  # px per riga (approssimativa)
-                altezza_massima = 350  # px, per non occupare tutto lo schermo
-
-                altezza_calcolata = min(altezza_per_riga * (len(df_visible) + 1), altezza_massima)
-                st.data_editor(
-                    data=df_visible,
-                    width='stretch',
-                    height=altezza_calcolata,
-                    column_order = ("Selezionato", "Time", "Casa", "Ospite", "Fascia"),
-                    key="match_table",
-                    hide_index=True,
-                    on_change=handle_change,
-                    column_config={
-                        "Selezionato": st.column_config.CheckboxColumn("", width=35, pinned=True),
-                        "Time": st.column_config.TextColumn("Data", disabled=True),
-                        "Casa": st.column_config.TextColumn("Casa", disabled=True),
-                        "Ospite": st.column_config.TextColumn("Ospite", disabled=True),
-                        "Fascia": st.column_config.TextColumn("Fascia", disabled=True),
-                    },
-                )
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        # Filtra df per mostrare dettagli delle righe selezionate
-        cols = st.columns([4.5, 6])
-        with cols[0]:
-            with st.container():
-                print_match_details(st.session_state.original_df)
-
-        # Genera testo WhatsApp
-        print_wa_code(st.session_state.original_df)
-
-    # Link utili
     st.markdown("---")
-    st.markdown("🔗*_LINKS VERIFICA DATE DAI SITI UFFICIALI:_*")
-    btn_cols = st.columns([0.5, 0.5, 1.5, 13])
-    with btn_cols[0]:
-        st.markdown("[CSI](https://live.centrosportivoitaliano.it/25/Lombardia/Bergamo)", unsafe_allow_html=True)
-    with btn_cols[1]:
-        st.markdown("[FIGC](https://www.crlombardia.it/comunicati?q=&page=&content_category_value_id=27&delegazioni%5B%5D=13)", unsafe_allow_html=True)
-    with btn_cols[2]:
-        st.markdown("[TuttoCampo](https://www.tuttocampo.it/Lombardia/BG/)", unsafe_allow_html=True)
+    col, _ = st.columns([6, 8])
+    with col:
+        st.markdown("✅ *_TESTO PER INVIO PROGRAMMA VIA WHATSAPP:_*")
+        st.code(testo_wa, language=None)
 
+
+def _render_links() -> None:
+    st.markdown("---")
+    st.markdown("🔗 *_LINKS VERIFICA DATE DAI SITI UFFICIALI:_*")
+    cols = st.columns([0.5] * len(LINKS) + [13 - 0.5 * len(LINKS)])
+    for col, (label, url) in zip(cols, LINKS):
+        with col:
+            st.markdown(f"[{label}]({url})", unsafe_allow_html=True)
+
+
+# ── Entry point ───────────────────────────────────────────────────────────────
+def main() -> None:
+    _init_session_state()
+
+    if st.session_state.original_df.empty:
+        st.warning("Nessun dato disponibile nel calendario.")
+        page_nav()
+        return
+
+    # Filtri
+    col_testo, _ = st.columns([4, 16])
+    with col_testo:
+        testo = st.text_input("Squadra Casa/Ospite", placeholder="", icon="⚽").strip()
+
+    col_cat, _ = st.columns([4, 16])
+    with col_cat:
+        opzioni_cat = ["Tutte"] + sorted(
+            st.session_state.original_df["Fascia"].dropna().unique()
+        )
+        categoria = st.selectbox("🔵FIGC 🟡CSI", options=opzioni_cat, index=0)
+
+    # Aggiorna df_visible ad ogni run (Streamlit re-esegue tutto comunque)
+    st.session_state.df_visible = _apply_filters(testo, categoria)
+    df_visible = st.session_state.df_visible
+
+    col_table, _ = st.columns([4.5, 6])
+    with col_table:
+        _render_table(df_visible)
+
+    col_details, _ = st.columns([4.5, 6])
+    with col_details:
+        _render_match_details(st.session_state.original_df)
+
+    _render_wa_code(st.session_state.original_df)
+    _render_links()
+
+
+try:
+    main()
 except Exception as e:
-    st.error(f"Errore nella lettura del file: {e}")
+    st.error(f"Errore nell'applicazione: {e}")
+    raise  # utile in sviluppo; rimuovi in produzione
 
 page_nav()
