@@ -27,7 +27,7 @@ LINKS = [
         "FIGC",
         "https://www.crlombardia.it/comunicati?q=&page=&content_category_value_id=27&delegazioni%5B%5D=13",
     ),
-    ("TuttoCampo", "https://www.tuttocampo.it/Lombardia/BG/"),
+    # ("TuttoCampo", "https://www.tuttocampo.it/Lombardia/BG/"),
 ]
 
 # ── Page config ──────────────────────────────────────────────────────────────
@@ -173,7 +173,7 @@ def _render_wa_code(df) -> None:
 def _render_links() -> None:
     add_markdown_divider()
     st.markdown("🔗 *_LINKS VERIFICA DATE DAI SITI UFFICIALI:_*")
-    cols = st.columns([0.5] * len(LINKS) + [13 - 0.5 * len(LINKS)])
+    cols = st.columns([0.4] * len(LINKS) + [13 - 0.5 * len(LINKS)])
     for col, (label, url) in zip(cols, LINKS):
         with col:
             st.markdown(f"[{label}]({url})", unsafe_allow_html=True)
@@ -214,6 +214,7 @@ def main() -> None:
 
     _render_wa_code(st.session_state.original_df)
     _render_links()
+    add_markdown_divider()
 
 
 try:

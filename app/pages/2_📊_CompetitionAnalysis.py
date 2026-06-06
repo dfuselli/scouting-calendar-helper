@@ -12,6 +12,7 @@ from common.data_handler import (
 )
 from map.data_engine import load_geojson_data
 from map.map_factory import create_map
+from ui.common import add_markdown_divider
 from ui.nav import page_nav
 
 # ── Costanti ────────────────────────────────────────────────────────────────
@@ -215,6 +216,7 @@ def main() -> None:
     # Export / Import
     _render_export_section()
     _render_import_section()
+    add_markdown_divider()
 
 
 try:
