@@ -140,13 +140,14 @@ def _render_map(gdf: pd.DataFrame, df_agg: pd.DataFrame) -> None:
             st.error(f"Errore durante la creazione della mappa: {e}")
 
     with col2:
-        st.dataframe(
-            df_agg.rename(columns={"Casa": "Squadra"})
-            .loc[:, ["Squadra", "Categoria", "Comune"]]
-            .sort_values("Squadra"),
-            width="stretch",
-            hide_index=True,
-        )
+        pass
+        # st.dataframe(
+        #     df_agg.rename(columns={"Casa": "Squadra"})
+        #     .loc[:, ["Squadra", "Categoria", "Comune"]]
+        #     .sort_values("Squadra"),
+        #     width="stretch",
+        #     hide_index=True,
+        # )
 
 
 # ── Export / Import ──────────────────────────────────────────────────────────
@@ -198,7 +199,6 @@ def main() -> None:
 
     if df_cleaned.empty:
         st.warning("Nessun dato disponibile nel calendario.")
-        page_nav()
         return
 
     # Opzioni filtri

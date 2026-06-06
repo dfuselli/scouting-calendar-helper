@@ -182,7 +182,6 @@ def main() -> None:
 
     if st.session_state.original_df.empty:
         st.warning("Nessun dato disponibile nel calendario.")
-        page_nav()
         return
 
     # Filtri
