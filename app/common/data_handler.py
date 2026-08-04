@@ -1,6 +1,6 @@
 import sqlite3
 import tempfile
-from datetime import datetime, time, timedelta
+from datetime import UTC, datetime, time, timedelta
 
 import gdown
 import pandas as pd
@@ -15,9 +15,9 @@ gdrive_db_path = "https://drive.google.com/uc?id=1mDEHXgx53oxzAEOXETRXGwPXeYXlmi
 @st.cache_data(ttl=600)
 def download_db():
     """Scarica DB da Drive in temp"""
-    temp_db = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
-    gdown.download(gdrive_db_path, temp_db.name, quiet=False)
-    return temp_db.name
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".db") as temp_db:
+        gdown.download(gdrive_db_path, temp_db.name, quiet=False)
+        return temp_db.name
 
 
 db_path = download_db()
@@ -64,8 +64,8 @@ def load_calendar_data(filter_next_7_days=True):
 
     # Filtra per i prossimi 7 giorni
     if filter_next_7_days:
-        oggi_mezzanotte = datetime.combine(datetime.today(), time.min)
-        stasera_mezzanotte = datetime.combine(datetime.today(), time.max)
+        oggi_mezzanotte = datetime.combine(datetime.now(tz=UTC), time.min)
+        stasera_mezzanotte = datetime.combine(datetime.now(tz=UTC), time.max)
         settimana_prossima = stasera_mezzanotte + timedelta(days=8)
         df = df[(df["Data"] >= oggi_mezzanotte) & (df["Data"] < settimana_prossima)]
 
@@ -112,8 +112,8 @@ def load_calendar_data_from_db(filter_next_7_days=True):
 
     # Filtra per i prossimi 7 giorni
     if filter_next_7_days:
-        oggi_mezzanotte = datetime.combine(datetime.today(), time.min)
-        stasera_mezzanotte = datetime.combine(datetime.today(), time.max)
+        oggi_mezzanotte = datetime.combine(datetime.now(tz=UTC), time.min)
+        stasera_mezzanotte = datetime.combine(datetime.now(tz=UTC), time.max)
         settimana_prossima = stasera_mezzanotte + timedelta(days=8)
         df = df[(df["Data"] >= oggi_mezzanotte) & (df["Data"] < settimana_prossima)]
 
@@ -225,5 +225,5 @@ def add_matches_to_db(df_excel):
             )
 
         st.success("Import completato con successo.")
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         st.error(f"Errore durante l'import: {e}")

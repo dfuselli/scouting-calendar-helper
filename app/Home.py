@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit as st  # noqa: N999
 
 calendar = st.Page("./pages/1_⚽_CalendarHelper.py", title="Calendar Helper")
 competitions = st.Page(

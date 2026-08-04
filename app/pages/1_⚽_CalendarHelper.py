@@ -2,7 +2,6 @@
 import streamlit as st
 from common.data_handler import load_calendar_data
 from ui.common import add_markdown_divider
-from ui.nav import page_nav
 
 # ── Costanti ────────────────────────────────────────────────────────────────
 PAGE_TITLE = "Home"
@@ -223,4 +222,4 @@ except Exception as e:
     st.error(f"Errore nell'applicazione: {e}")
     raise  # utile in sviluppo; rimuovi in produzione
 
-page_nav()
+# page_nav()

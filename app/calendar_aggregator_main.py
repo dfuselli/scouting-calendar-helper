@@ -37,7 +37,7 @@ def merge_excel_sheets(input_file: str, output_file: str):
             dayfirst=True,
             errors="coerce",  # mette NaT se non riesce a convertire
         ).dt.strftime("%d/%m/%Y")
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"⚠️ Errore nella normalizzazione della colonna data '{first_col}': {e}")
 
     # Normalizza la prima colonna come time nel formato hh:mm
@@ -52,7 +52,7 @@ def merge_excel_sheets(input_file: str, output_file: str):
             return x_pulito
 
         combined_df[target_col] = combined_df[target_col].apply(pulisci_valore)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"⚠️ Errore nella normalizzazione della colonna '{target_col}': {e}")
 
     # Mantiene solo le prime 15 colonne

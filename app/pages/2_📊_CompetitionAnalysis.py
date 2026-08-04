@@ -13,7 +13,6 @@ from common.data_handler import (
 from map.data_engine import load_geojson_data
 from map.map_factory import create_map
 from ui.common import add_markdown_divider
-from ui.nav import page_nav
 
 # ── Costanti ────────────────────────────────────────────────────────────────
 PAGE_TITLE = "Mappa Partite"
@@ -135,7 +134,7 @@ def _render_map(gdf: pd.DataFrame, df_agg: pd.DataFrame) -> None:
         try:
             fig = create_map(gdf, df_agg)
             st.plotly_chart(fig, width="stretch")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             st.error(f"Errore durante la creazione della mappa: {e}")
 
     with col2:
@@ -157,7 +156,7 @@ def _render_export_section() -> None:
 
 def _render_import_section() -> None:
     with st.expander("⬆️ Importa"):
-        col1, col2 = st.columns([30, 70])
+        col1, _col2 = st.columns([30, 70])
 
         with col1:
             uploaded_file = st.file_uploader(" ", type=["xlsx"])
@@ -186,13 +185,13 @@ def main() -> None:
     # Caricamento dati (cacheato)
     try:
         gdf, df_geo = _load_geojson()
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         st.error(f"Errore durante il caricamento del file GeoJSON: {e}")
         return
 
     try:
         df_cleaned = _load_calendar()
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         st.error(f"Errore durante il caricamento del calendario: {e}")
         return
 
@@ -225,4 +224,4 @@ except Exception as e:
     st.error(f"Errore nell'applicazione: {e}")
     raise
 
-page_nav()
+# page_nav()

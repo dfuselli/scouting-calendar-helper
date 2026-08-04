@@ -3,7 +3,6 @@ import plotly.express as px
 import streamlit as st
 import xlrd
 from common.data_handler import cleanup_calendar_data, load_calendar_data
-from ui.nav import page_nav
 
 # Configura la pagina
 st.set_page_config(page_title="Home", layout="wide")
@@ -25,12 +24,12 @@ try:
     df_calendario = load_calendar_data(filter_next_7_days=False)
     df_cleaned = cleanup_calendar_data(df_calendario)
 
-except Exception as e:
+except Exception as e:  # noqa: BLE001
     st.error(f"Errore durante il caricamento del file Excel: {e}")
     st.stop()
 
 ######### Start UI ############
-page_nav()
+# page_nav()
 # Intestazione
 filter1col, filter2col, filter3col, empty_col, top3col = st.columns(
     [5, 4, 5, 5, 8], vertical_alignment="top"

@@ -34,7 +34,7 @@ def create_map(gdf, df_agg):
     fig.update_traces(
         customdata=df_agg[["case_str_hover"]].to_numpy(),
         hovertemplate=("<b>%{location}</b><br>%{customdata[0]}<extra></extra>"),
-        selector=dict(type="choroplethmapbox"),
+        selector={"type": "choroplethmapbox"},
     )
 
     fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
