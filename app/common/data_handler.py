@@ -83,7 +83,7 @@ def load_calendar_data_from_db(filter_next_7_days=True):
     else:
         df["ID"] = df.apply(
             lambda row: (
-                f"{row['Data'].strftime('%Y%m%d')}_{row['Categoria']}_{row['Casa']}_{row['Ospite']}"
+                f"{row['Data']}_{row['Categoria']}_{row['Casa']}_{row['Ospite']}"
             ),
             axis=1,
         )

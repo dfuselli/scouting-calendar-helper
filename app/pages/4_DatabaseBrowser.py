@@ -1,11 +1,15 @@
 import os
 import re
 import sqlite3
-from pathlib import Path
 
 import pandas as pd
 import streamlit as st
-from common.data_handler import download_db
+from common.data_handler import (
+    add_matches_to_db,
+    download_db,
+    export_db,
+)
+from ui.common import add_markdown_divider
 from ui.nav import page_nav
 
 # ── Costanti ────────────────────────────────────────────────────────────────
@@ -125,6 +129,38 @@ def write_table(conn: sqlite3.Connection, table: str, df: pd.DataFrame) -> None:
     conn.commit()
 
 
+# ── Export / Import ──────────────────────────────────────────────────────────
+def _render_export_section() -> None:
+    with st.expander("📤 Esporta"):
+        export_db("📤 Download DB su PC → Update Manuale su GDrive")
+
+
+def _render_import_section() -> None:
+    with st.expander("⬆️ Importa"):
+        col1, _col2 = st.columns([30, 70])
+
+        with col1:
+            uploaded_file = st.file_uploader(" ", type=["xlsx"])
+
+        if uploaded_file is None:
+            return
+
+        df_excel = pd.read_excel(uploaded_file, engine="openpyxl")
+        df_useful = df_excel.iloc[:, :13]
+
+        col_btn, _ = st.columns([30, 70])
+        with col_btn:
+            if st.button(f"Importa in database {len(df_useful)} rows"):
+                add_matches_to_db(df_useful)
+                st.rerun()
+
+        st.dataframe(
+            df_useful.head(),
+            width="stretch",
+            hide_index=True,
+        )
+
+
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if not check_password():
@@ -187,7 +223,7 @@ def main() -> None:
         key="table_editor",
     )
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, _col3 = st.columns(3)
 
     with col1:
         if st.button("Reload from DB"):
@@ -204,19 +240,11 @@ def main() -> None:
             except Exception as e:  # noqa: BLE001
                 st.error(f"Save failed: {e}")
 
-    with col3:
-        db_bytes = export_db_copy(db_path)
-        st.download_button(
-            "Export DB",
-            data=db_bytes,
-            file_name=Path(db_path).name,
-            mime="application/x-sqlite3",
-        )
+    # Export / Import
+    _render_export_section()
+    _render_import_section()
 
-    st.divider()
-    st.subheader("Preview")
-    st.dataframe(edited_df, width="stretch", hide_index=True)
-    st.divider()
+    add_markdown_divider()
 
     conn.close()
 

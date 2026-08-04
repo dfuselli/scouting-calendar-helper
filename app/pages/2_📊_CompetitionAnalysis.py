@@ -5,10 +5,8 @@ import os
 import pandas as pd
 import streamlit as st
 from common.data_handler import (
-    add_matches_to_db,
     aggregate_by_comune,
     cleanup_calendar_data,
-    export_db,
     load_calendar_data_from_db,
 )
 from map.data_engine import load_geojson_data
@@ -171,38 +169,6 @@ def _render_map(gdf: pd.DataFrame, df_agg: pd.DataFrame) -> None:
         # )
 
 
-# ── Export / Import ──────────────────────────────────────────────────────────
-def _render_export_section() -> None:
-    with st.expander("📤 Esporta"):
-        export_db("📤 Download DB su PC → Update Manuale su GDrive")
-
-
-def _render_import_section() -> None:
-    with st.expander("⬆️ Importa"):
-        col1, _col2 = st.columns([30, 70])
-
-        with col1:
-            uploaded_file = st.file_uploader(" ", type=["xlsx"])
-
-        if uploaded_file is None:
-            return
-
-        df_excel = pd.read_excel(uploaded_file, engine="openpyxl")
-        df_useful = df_excel.iloc[:, :13]
-
-        col_btn, _ = st.columns([30, 70])
-        with col_btn:
-            if st.button(f"Importa in database {len(df_useful)} rows"):
-                add_matches_to_db(df_useful)
-                st.rerun()
-
-        st.dataframe(
-            df_useful.head(),
-            width="stretch",
-            hide_index=True,
-        )
-
-
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if not check_password():
@@ -240,9 +206,6 @@ def main() -> None:
     # Mappa e tabella
     _render_map(gdf, df_agg)
 
-    # Export / Import
-    _render_export_section()
-    _render_import_section()
     add_markdown_divider()
 
 
