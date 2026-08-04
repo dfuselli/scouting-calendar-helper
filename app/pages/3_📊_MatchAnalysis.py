@@ -2,7 +2,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 import xlrd
-from common.data_handler import cleanup_calendar_data, load_calendar_data
+from common.data_handler import cleanup_calendar_data, load_calendar_data_from_db
 
 # Configura la pagina
 st.set_page_config(page_title="Home", layout="wide")
@@ -21,7 +21,7 @@ hide_streamlit_style = """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 try:
-    df_calendario = load_calendar_data(filter_next_7_days=False)
+    df_calendario = load_calendar_data_from_db(filter_next_7_days=False)
     df_cleaned = cleanup_calendar_data(df_calendario)
 
 except Exception as e:  # noqa: BLE001
@@ -248,7 +248,7 @@ with col2:
             title="Top 10 osservatori (per # match)",
         )  # bar chart [web:180]
         fig_obs.update_layout(yaxis={"categoryorder": "total ascending"})
-        st.plotly_chart(fig_obs, use_container_width=True)  # [web:223]
+        st.plotly_chart(fig_obs, width="stretch")  # [web:223]
 
 
 if filtered_df is not None and not filtered_df.empty:

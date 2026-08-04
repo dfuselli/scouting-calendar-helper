@@ -9,7 +9,7 @@ import streamlit as st
 from helpers import merge_categoria_federazione
 
 # db_path = "app/resources/scouting_assistant.db" #
-gdrive_db_path = st.secrets.get("gdrive_db_path", os.environ.get("GDRIVE_DB_PATH"))
+gdrive_db_path = st.secrets.get("GDRIVE_DB_PATH", os.environ.get("GDRIVE_DB_PATH"))
 
 
 @st.cache_data(ttl=600)

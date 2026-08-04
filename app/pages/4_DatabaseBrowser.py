@@ -5,22 +5,40 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+from common.data_handler import download_db
+from ui.nav import page_nav
 
-DB_PATH = st.secrets.get("db_path", os.getenv("DB_PATH", "app.db"))
-BROWSER_PASSWORD = st.secrets.get("browser_password", os.getenv("BROWSER_PASSWORD", ""))
+# ── Costanti ────────────────────────────────────────────────────────────────
+PAGE_TITLE = "Database Browser"
+LAYOUT_MAP = 55
+LAYOUT_TABLE = 45
+FILTER_COLS = [5, 4, 5, 13]
+
+HIDE_STREAMLIT_UI = """
+<style>
+    #MainMenu, footer, header { visibility: hidden; }
+    div.block-container { padding-top: 0.5rem; }
+</style>
+"""
+
+# ── Page config ──────────────────────────────────────────────────────────────
+st.set_page_config(page_title=PAGE_TITLE, layout="wide")
+st.markdown(HIDE_STREAMLIT_UI, unsafe_allow_html=True)
+
+browser_password = st.secrets.get("BROWSER_PASSWORD", os.getenv("BROWSER_PASSWORD", ""))
 
 
 def check_password() -> bool:
     if st.session_state.get("db_pwd_ok"):
         return True
 
-    if not BROWSER_PASSWORD:
-        st.error("Missing sqlite_browser_password secret/env var.")
+    if not browser_password:
+        st.error("Missing BROWSER_PASSWORD secret/env var.")
         st.stop()
 
     pwd = st.text_input("Password", type="password")
     if st.button("Entra", type="primary"):
-        if pwd == BROWSER_PASSWORD:
+        if pwd == browser_password:
             st.session_state["db_pwd_ok"] = True
             st.rerun()
         else:
@@ -40,18 +58,18 @@ def list_tables(conn: sqlite3.Connection) -> list[str]:
     return [r[0] for r in rows]
 
 
-def get_columns(conn: sqlite3.Connection, table: str) -> list[dict]:
-    return conn.execute(f"PRAGMA table_info({table})").fetchall()
+def sanitize_table_name(name: str) -> str:
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name):
+        raise ValueError("Invalid table name")
+    return name
 
 
 def read_table(conn: sqlite3.Connection, table: str) -> pd.DataFrame:
     return pd.read_sql_query(f'SELECT * FROM "{table}"', conn)
 
 
-def sanitize_table_name(name: str) -> str:
-    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name):
-        raise ValueError("Invalid table name")
-    return name
+def get_columns(conn: sqlite3.Connection, table: str):
+    return conn.execute(f'PRAGMA table_info("{table}")').fetchall()
 
 
 def export_db_copy(src_path: str) -> bytes:
@@ -65,22 +83,13 @@ def write_table(conn: sqlite3.Connection, table: str, df: pd.DataFrame) -> None:
     if not pk_cols and "id" in df.columns:
         pk_cols = ["id"]
     if not pk_cols:
-        raise ValueError(
-            "No primary key found. Add an id column or a primary key to support updates."
-        )
+        raise ValueError("No primary key found. Add an id column or primary key.")
 
-    table_quoted = f'"{table}"'
-    existing = pd.read_sql_query(f"SELECT * FROM {table_quoted}", conn)
-    existing = existing.reset_index(drop=True)
+    existing = read_table(conn, table).reset_index(drop=True)
     edited = df.reset_index(drop=True)
 
-    existing_keys = set()
-    for _, row in existing.iterrows():
-        existing_keys.add(tuple(row[pk] for pk in pk_cols))
-
-    edited_keys = set()
-    for _, row in edited.iterrows():
-        edited_keys.add(tuple(row[pk] for pk in pk_cols))
+    existing_keys = {tuple(row[pk] for pk in pk_cols) for _, row in existing.iterrows()}
+    edited_keys = {tuple(row[pk] for pk in pk_cols) for _, row in edited.iterrows()}
 
     cur = conn.cursor()
 
@@ -93,14 +102,14 @@ def write_table(conn: sqlite3.Connection, table: str, df: pd.DataFrame) -> None:
             where_clause = " AND ".join([f'"{pk}"=?' for pk in pk_cols])
             params = [values[c] for c in set_cols] + [values[pk] for pk in pk_cols]
             cur.execute(
-                f"UPDATE {table_quoted} SET {set_clause} WHERE {where_clause}", params
+                f'UPDATE "{table}" SET {set_clause} WHERE {where_clause}', params
             )
         else:
             insert_cols = list(edited.columns)
-            placeholders = ", ".join(["?"] * len(insert_cols))
             cols_clause = ", ".join([f'"{c}"' for c in insert_cols])
+            placeholders = ", ".join(["?"] * len(insert_cols))
             cur.execute(
-                f"INSERT INTO {table_quoted} ({cols_clause}) VALUES ({placeholders})",
+                f'INSERT INTO "{table}" ({cols_clause}) VALUES ({placeholders})',
                 [values[c] for c in insert_cols],
             )
 
@@ -109,79 +118,113 @@ def write_table(conn: sqlite3.Connection, table: str, df: pd.DataFrame) -> None:
         if key not in edited_keys:
             where_clause = " AND ".join([f'"{pk}"=?' for pk in pk_cols])
             cur.execute(
-                f"DELETE FROM {table_quoted} WHERE {where_clause}",
+                f'DELETE FROM "{table}" WHERE {where_clause}',
                 [row[pk] for pk in pk_cols],
             )
 
     conn.commit()
 
 
-st.title("SQLite Browser")
+# ── Entry point ───────────────────────────────────────────────────────────────
 
 if not check_password():
     st.stop()
 
-if not Path(DB_PATH).exists():
-    st.error(f"DB not found: {DB_PATH}")
-    st.stop()
 
-conn = get_conn(DB_PATH)
+def main() -> None:
 
-tables = list_tables(conn)
-if not tables:
-    st.warning("No tables found in database.")
-    st.stop()
+    db_path = download_db()
+    conn = get_conn(db_path)
 
-table = st.selectbox("Table", tables)
+    # tables = list_tables(conn)
+    # if not tables:
+    #     st.warning("No tables found in database.")
+    #     st.stop()
 
-try:
-    sanitize_table_name(table)
-except ValueError:
-    st.error("Invalid table name selected.")
-    st.stop()
+    # table = st.selectbox("Table", tables)
 
-if "df_loaded" not in st.session_state or st.session_state.get("loaded_table") != table:
-    st.session_state["df_loaded"] = read_table(conn, table)
-    st.session_state["loaded_table"] = table
+    # try:
+    #     sanitize_table_name(table)
+    # except ValueError:
+    #     st.error("Invalid table name selected.")
+    #     st.stop()
 
-st.caption(f"DB: {DB_PATH}")
-st.caption(f"Rows: {len(st.session_state['df_loaded'])}")
+    table = "matches"  # Hardcoded for now; can be made selectable later
 
-edited_df = st.data_editor(
-    st.session_state["df_loaded"],
-    num_rows="dynamic",
-    use_container_width=True,
-    key="table_editor",
-)
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    if st.button("Reload from DB"):
+    if (
+        "df_loaded" not in st.session_state
+        or st.session_state.get("loaded_table") != table
+    ):
         st.session_state["df_loaded"] = read_table(conn, table)
-        st.rerun()
+        st.session_state["loaded_table"] = table
 
-with col2:
-    if st.button("Save changes to DB", type="primary"):
-        try:
-            write_table(conn, table, edited_df)
-            st.session_state["df_loaded"] = read_table(conn, table)
-            st.success("Changes saved.")
-            st.rerun()
-        except Exception as e:  # noqa: BLE001
-            st.error(f"Save failed: {e}")
+    st.caption(f"Rows: {len(st.session_state['df_loaded'])}")
 
-with col3:
-    db_bytes = export_db_copy(DB_PATH)
-    st.download_button(
-        "Export DB",
-        data=db_bytes,
-        file_name=Path(DB_PATH).name,
-        mime="application/x-sqlite3",
+    df = st.session_state["df_loaded"].copy()
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        team_query = st.text_input("Filtra casa/ospite")
+
+    with col2:
+        categorie = sorted(df["Categoria"].dropna().astype(str).unique())
+        categorie_sel = st.multiselect("Categoria", options=categorie, default=[])
+
+    if team_query:
+        mask_team = df["Casa"].astype(str).str.contains(
+            team_query, case=False, na=False
+        ) | df["Ospite"].astype(str).str.contains(team_query, case=False, na=False)
+        df = df[mask_team]
+
+    if categorie_sel:
+        df = df[df["Categoria"].astype(str).isin(categorie_sel)]
+
+    edited_df = st.data_editor(
+        df,
+        num_rows="dynamic",
+        width="stretch",
+        key="table_editor",
     )
 
-st.divider()
-st.subheader("Preview")
-st.dataframe(edited_df, use_container_width=True)
+    col1, col2, col3 = st.columns(3)
 
-conn.close()
+    with col1:
+        if st.button("Reload from DB"):
+            st.session_state["df_loaded"] = read_table(conn, table)
+            st.rerun()
+
+    with col2:
+        if st.button("Save changes to DB", type="primary"):
+            try:
+                write_table(conn, table, edited_df)
+                st.session_state["df_loaded"] = read_table(conn, table)
+                st.success("Changes saved.")
+                st.rerun()
+            except Exception as e:  # noqa: BLE001
+                st.error(f"Save failed: {e}")
+
+    with col3:
+        db_bytes = export_db_copy(db_path)
+        st.download_button(
+            "Export DB",
+            data=db_bytes,
+            file_name=Path(db_path).name,
+            mime="application/x-sqlite3",
+        )
+
+    st.divider()
+    st.subheader("Preview")
+    st.dataframe(edited_df, width="stretch", hide_index=True)
+    st.divider()
+
+    conn.close()
+
+
+try:
+    main()
+except Exception as e:
+    st.error(f"Errore nell'applicazione: {e}")
+    raise  # utile in sviluppo; rimuovi in produzione
+
+page_nav()
