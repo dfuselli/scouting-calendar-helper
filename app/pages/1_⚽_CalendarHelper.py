@@ -1,6 +1,6 @@
 # home.py
 import streamlit as st
-from common.data_handler import load_calendar_data
+from common.data_handler import load_calendar_data_from_db
 from ui.common import add_markdown_divider
 
 # ── Costanti ────────────────────────────────────────────────────────────────
@@ -38,7 +38,7 @@ st.markdown(HIDE_STREAMLIT_UI, unsafe_allow_html=True)
 def _init_session_state() -> None:
     """Inizializza lo stato della sessione se non già presente."""
     if "original_df" not in st.session_state:
-        st.session_state.original_df = load_calendar_data()
+        st.session_state.original_df = load_calendar_data_from_db()
         st.session_state.df_visible = st.session_state.original_df.copy()
     if "last_selected_id" not in st.session_state:
         st.session_state.last_selected_id = None
