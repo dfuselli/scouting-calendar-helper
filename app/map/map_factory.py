@@ -1,13 +1,15 @@
 import json
-from map.constants import CENTER_GPS_COORD
+
 import plotly.express as px
 import plotly.graph_objects as go
+from map.constants import CENTER_GPS_COORD
 
 dark_greens_with_gray0 = [
-        (0.00, "#BB0000"),  # 0 = grigio
-        (0.01, "#005723"),
-        (1.00, "#005723"),
-    ]
+    (0.00, "#BB0000"),  # 0 = grigio
+    (0.01, "#005723"),
+    (1.00, "#005723"),
+]
+
 
 def create_map(gdf, df_agg):
     geojson = json.loads(gdf.to_json())
@@ -31,15 +33,11 @@ def create_map(gdf, df_agg):
     # Passo al trace dati extra per hover: [Comune, n_squadre, case_str]
     fig.update_traces(
         customdata=df_agg[["case_str_hover"]].to_numpy(),
-        hovertemplate=(
-            "<b>%{location}</b><br>"
-            "%{customdata[0]}"
-            "<extra></extra>"
-        ),
-        selector=dict(type="choroplethmapbox"),
+        hovertemplate=("<b>%{location}</b><br>%{customdata[0]}<extra></extra>"),
+        selector={"type": "choroplethmapbox"},
     )
 
-    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+    fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
     return fig
 
 

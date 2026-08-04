@@ -5,6 +5,7 @@ shortcut_categorie = {
     "MINIPULCINI": "MiniPulc.",
 }
 
+
 def merge_categoria_federazione(categoria):
     if categoria:
         compressed = ""

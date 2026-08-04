@@ -6,14 +6,21 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "openpyxl==3.1.5",
-    "streamlit==1.54.0",
-    "plotly==6.5.2",
+    "streamlit==1.60.0",
+    "plotly==6.9.0",
     "unidecode==1.4.0",
-    "geopandas==1.1.2",
+    "geopandas==1.1.4",
     "xlrd==2.0.2",
+    "gdown==6.1.0",
 ]
 
 [dependency-groups]
 dev = [
-    "pre-commit>=4.3.0",
+    "pre-commit==4.6.1",
+    "ruff==0.16.1",
+    "ty==0.0.66",
 ]
+
+[tool.ty.environment]
+# Aggiungi la cartella app come source root
+root = ["app"]
