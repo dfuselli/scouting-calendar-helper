@@ -6,4 +6,4 @@ showSidebarNavigation = false
 hideTopBar = true
 
 [server]
-runOnSave = false
+runOnSave = true
