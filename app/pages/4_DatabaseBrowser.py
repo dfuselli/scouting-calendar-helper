@@ -811,6 +811,7 @@ def main() -> None:
         # =====================================================================
 
         df_visible = df_loaded.copy()
+        df_visible = df_visible.reset_index(drop=True)
 
         # ---------------------------------------------------------------------
         # Team filter
