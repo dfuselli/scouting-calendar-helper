@@ -461,29 +461,10 @@ def apply_db_reset(
 def export_database(
     conn: sqlite3.Connection,
 ) -> bytes:
-    """
-    Crea una copia consistente del database nello stato attuale
-    utilizzando SQLite backup API.
-
-    È preferibile alla lettura diretta del file perché funziona
-    correttamente anche quando SQLite sta utilizzando WAL.
-    """
-
-    backup_conn = sqlite3.connect(":memory:")
-
-    try:
-        conn.commit()
-
-        conn.backup(backup_conn)
-
-        # Recupera il database SQLite dalla connection in memoria
-        # creando un file temporaneo in memoria tramite serialize().
-        db_bytes = backup_conn.serialize()
-
-        return db_bytes
-
-    finally:
-        backup_conn.close()
+    # Recupera il database SQLite dalla connection in memoria
+    # creando un file temporaneo in memoria tramite serialize().
+    db_bytes = conn.serialize()
+    return db_bytes
 
 
 def render_export_section(
@@ -870,7 +851,6 @@ def main() -> None:
             num_rows="dynamic",
             width="stretch",
             key=editor_key,
-            hide_index=True,
             column_config=column_config,
         )
 
