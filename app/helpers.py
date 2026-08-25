@@ -2,6 +2,8 @@ shortcut_categorie = {
     "GIOVANISSIMI": "Giov.",
     "ESORDIENTI": "Esord.",
     "PULCINI": "Pulc.",
+    "PRIMICALCI": "PrimiCalci",
+    "PICCOLIAMICI": "PiccoliAmici",
     "MINIPULCINI": "MiniPulc.",
 }
 
