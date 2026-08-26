@@ -14,6 +14,27 @@ dark_greens_with_gray0 = [
 def create_map(gdf, df_agg):
     geojson = json.loads(gdf.to_json())
     mx = max(int(df_agg["n_squadre"].max()), 1)
+
+    # ── Evidenzia Villa d'Almè ─────────────────────────────────────────────
+    df_agg = df_agg.copy()
+    target = "villa d'alme'".casefold()
+
+    df_agg["highlight_town"] = (
+        df_agg["Comune"]
+        .astype("string")
+        .str.replace("\u200b", "", regex=False)
+        .str.replace("\u00a0", " ", regex=False)
+        .str.replace(r"\s+", " ", regex=True)
+        .str.strip()
+        .str.casefold()
+        == target
+    )
+
+    df_highlight_town = df_agg[df_agg["highlight_town"]].copy()
+    # Se non ci sono dati per Villa d'Almè, df_villa sarà vuoto: gestiscilo
+    # creando comunque un trace vuoto o saltando il secondo layer.
+    # ────────────────────────────────────────────────────────────────────────
+
     fig = px.choropleth_mapbox(
         df_agg,
         geojson=geojson,
@@ -36,6 +57,23 @@ def create_map(gdf, df_agg):
         hovertemplate=("<b>%{location}</b><br>%{customdata[0]}<extra></extra>"),
         selector={"type": "choroplethmapbox"},
     )
+
+    # ── Secondo trace: solo Villa d'Almè, colore fisso giallo ─────────────
+    if not df_highlight_town.empty:
+        fig.add_trace(
+            go.Choroplethmapbox(
+                geojson=geojson,
+                locations=df_highlight_town["Comune"],
+                featureidkey="properties.name",
+                z=[1]
+                * len(df_highlight_town),  # valore fittizio, non usato per il colore
+                colorscale=[[0, "#ffd700"], [1, "#ffd700"]],  # tutto giallo
+                showscale=False,
+                hoverinfo="skip",  # usa l'hover del trace principale
+                name="villa_alme",
+            )
+        )
+    # ────────────────────────────────────────────────────────────────────────
 
     fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
     return fig
