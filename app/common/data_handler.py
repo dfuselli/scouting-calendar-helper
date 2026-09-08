@@ -59,7 +59,7 @@ init_db()
 st.cache_data(ttl="15m")
 
 
-def load_calendar_data_from_db(filter_next_7_days=True):
+def load_calendar_data_from_db(filter_next_7_days=True) -> pd.DataFrame:
     with sqlite3.connect(db_path) as conn:
         df = pd.read_sql_query("SELECT * FROM matches", conn)
     df = df[df["Data"].notna()]
@@ -104,7 +104,7 @@ def load_calendar_data_from_db(filter_next_7_days=True):
         return df
 
 
-def cleanup_calendar_data(df_calendario):
+def cleanup_calendar_data(df_calendario: pd.DataFrame) -> pd.DataFrame:
     df_calendario["Comune_casefold"] = (
         df_calendario["Comune"]
         .astype("string")
@@ -125,27 +125,6 @@ def cleanup_calendar_data(df_calendario):
     df_dist["casa_cat"] = (
         df_dist["Casa"].astype(str) + " (" + df_dist["Categoria"].astype(str) + ")"
     )
-
-    ########################TO DEBUG BAD COMUNE VALUES #####################################
-    # left = (
-    #     df_calendario[["Comune_casefold", "Comune", "Casa", "Categoria"]]
-    #     .dropna(subset=["Comune_casefold", "Casa", "Categoria"])
-    #     .drop_duplicates()
-    # )
-
-    # right = df_geo[["Comune_casefold"]].drop_duplicates()
-
-    # chk = left.merge(right, on="Comune_casefold", how="left", indicator=True)
-
-    # only_in_df = (
-    #     chk[chk["_merge"] == "left_only"]
-    #     .sort_values(["Comune", "Categoria", "Casa"])
-    #     [["Comune", "Comune_casefold", "Categoria", "Casa"]]
-    # )
-
-    # st.write("Righe con Comune NON nel GeoJSON (con Categoria e Casa):")
-    # st.dataframe(only_in_df, width='stretch', hide_index=True)
-    #############################################################
     return df_dist
 
 

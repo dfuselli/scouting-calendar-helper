@@ -15,6 +15,10 @@ PAGE_TITLE = "Database Browser"
 TABLE_NAME = "matches"
 
 HIDE_STREAMLIT_UI = """
+<style>
+    #MainMenu, footer, header { visibility: hidden; }
+    div.block-container { padding-top: 0.5rem; }
+</style>
 """
 
 

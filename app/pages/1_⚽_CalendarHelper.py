@@ -106,10 +106,10 @@ def _render_table(df_visible) -> None:
         on_change=_handle_change,
         column_config={
             "Selezionato": st.column_config.CheckboxColumn("", width=35, pinned=True),
-            "Time": st.column_config.TextColumn("Data", disabled=True),
-            "Casa": st.column_config.TextColumn("Casa", disabled=True),
-            "Ospite": st.column_config.TextColumn("Ospite", disabled=True),
-            "Fascia": st.column_config.TextColumn("Fascia", disabled=True),
+            "Time": st.column_config.TextColumn("Data", width=5, disabled=True),
+            "Casa": st.column_config.TextColumn("Casa", width=50, disabled=True),
+            "Ospite": st.column_config.TextColumn("Ospite", width=50, disabled=True),
+            "Fascia": st.column_config.TextColumn("Fascia", width=20, disabled=True),
         },
     )
 
@@ -173,7 +173,7 @@ def _render_wa_code(df) -> None:
 def _render_links() -> None:
     add_markdown_divider()
     st.markdown("🔗 *_LINKS VERIFICA DATE DAI SITI UFFICIALI:_*")
-    cols = st.columns([0.4] * len(LINKS) + [13 - 0.5 * len(LINKS)])
+    cols = st.columns([0.5] * len(LINKS) + [13 - 0.5 * len(LINKS)])
     for col, (label, url) in zip(cols, LINKS):
         with col:
             st.markdown(f"[{label}]({url})", unsafe_allow_html=True)

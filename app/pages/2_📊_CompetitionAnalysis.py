@@ -14,7 +14,6 @@ from map.map_factory import create_map
 from ui.common import add_markdown_divider
 from ui.nav import page_nav
 
-# ── Costanti ────────────────────────────────────────────────────────────────
 PAGE_TITLE = "Mappa Partite"
 LAYOUT_MAP = 55
 LAYOUT_TABLE = 45
@@ -70,10 +69,9 @@ def _load_geojson() -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 @st.cache_data(ttl=60 * 60)
-def _load_calendar() -> pd.DataFrame:
+def _load_calendar(df_geo: pd.DataFrame) -> pd.DataFrame:
     """Carica il calendario dal database e lo pulisce. Cache per 1 hora."""
-    df_cal = load_calendar_data_from_db(filter_next_7_days=False)
-    return cleanup_calendar_data(df_cal)
+    return load_calendar_data_from_db(filter_next_7_days=False)
 
 
 def _normalize_comune(series: pd.Series) -> pd.Series:
@@ -147,7 +145,7 @@ def _render_filter_panel(options: dict) -> tuple[list, list, list]:
     return comuni_sel, cat_sel, squadra_sel
 
 
-def _render_map(gdf: pd.DataFrame, df_agg: pd.DataFrame) -> None:
+def _render_map(gdf: pd.DataFrame, df_agg: pd.DataFrame, df_view: pd.DataFrame) -> None:
     """Renderizza la mappa. Reruns indipendente dai filtri nella tabella."""
     col1, col2 = st.columns([LAYOUT_MAP, LAYOUT_TABLE])
 
@@ -159,14 +157,34 @@ def _render_map(gdf: pd.DataFrame, df_agg: pd.DataFrame) -> None:
             st.error(f"Errore durante la creazione della mappa: {e}")
 
     with col2:
-        pass
-        # st.dataframe(
-        #     df_agg.rename(columns={"Casa": "Squadra"})
-        #     .loc[:, ["Squadra", "Categoria", "Comune"]]
-        #     .sort_values("Squadra"),
-        #     width="stretch",
-        #     hide_index=True,
-        # )
+        st.dataframe(
+            df_view.rename(columns={"Casa": "Squadra"})
+            .loc[:, ["Squadra", "Categoria", "Comune"]]
+            .sort_values("Squadra"),
+            width="stretch",
+            hide_index=True,
+        )
+
+
+def _render_missing_comuni(df_calendario: pd.DataFrame, df_geo: pd.DataFrame) -> None:
+    ########################TO DEBUG BAD COMUNE VALUES #####################################
+    left = (
+        df_calendario[["Comune_casefold", "Comune", "Casa", "Categoria"]]
+        .dropna(subset=["Comune_casefold", "Casa", "Categoria"])
+        .drop_duplicates()
+    )
+
+    right = df_geo[["Comune_casefold"]].drop_duplicates()
+
+    chk = left.merge(right, on="Comune_casefold", how="left", indicator=True)
+
+    only_in_df = chk[chk["_merge"] == "left_only"].sort_values(
+        ["Comune", "Categoria", "Casa"]
+    )[["Comune", "Comune_casefold", "Categoria", "Casa"]]
+
+    st.write("DEBUG - Squadre con Comune non trovato:")
+    st.dataframe(only_in_df, width="stretch", hide_index=True)
+    #############################################################
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
@@ -184,7 +202,8 @@ def main() -> None:
         return
 
     try:
-        df_cleaned = _load_calendar()
+        df_calendario: pd.DataFrame = _load_calendar(df_geo)
+        df_cleaned: pd.DataFrame = cleanup_calendar_data(df_calendario)
     except Exception as e:  # noqa: BLE001
         st.error(f"Errore durante il caricamento del calendario: {e}")
         return
@@ -204,9 +223,11 @@ def main() -> None:
     df_agg = aggregate_by_comune(df_view, df_geo)
 
     # Mappa e tabella
-    _render_map(gdf, df_agg)
-
+    _render_map(gdf, df_agg, df_view)
     add_markdown_divider()
+
+    # _render_missing_comuni(df_calendario, df_geo)
+    # add_markdown_divider()
 
 
 try:
