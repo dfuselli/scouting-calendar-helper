@@ -6,19 +6,20 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "openpyxl==3.1.5",
-    "streamlit==1.60.0",
-    "plotly==6.9.0",
+    "streamlit==1.64.0",
+    "plotly==7.1.0",
     "unidecode==1.4.0",
     "geopandas==1.1.4",
     "xlrd==2.0.2",
-    "gdown==6.1.0",
+    "gdown==6.4.0",
+    "streamlit-pivot>=0.6.0",
 ]
 
 [dependency-groups]
 dev = [
-    "pre-commit==4.6.1",
-    "ruff==0.16.1",
-    "ty==0.0.66",
+    "pre-commit==4.6.2",
+    "ruff==0.16.8",
+    "ty==0.0.83",
 ]
 
 [tool.ty.environment]

@@ -1,6 +1,5 @@
 # map_page.py
 import json
-import os
 
 import pandas as pd
 import streamlit as st
@@ -29,27 +28,6 @@ HIDE_STREAMLIT_UI = """
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(page_title=PAGE_TITLE, layout="wide")
 st.markdown(HIDE_STREAMLIT_UI, unsafe_allow_html=True)
-
-browser_password = st.secrets.get("BROWSER_PASSWORD", os.getenv("BROWSER_PASSWORD", ""))
-
-
-def check_password() -> bool:
-    if st.session_state.get("db_pwd_ok"):
-        return True
-
-    if not browser_password:
-        st.error("Missing BROWSER_PASSWORD secret/env var.")
-        st.stop()
-
-    pwd = st.text_input("Password", type="password")
-    if st.button("Entra", type="primary"):
-        if pwd == browser_password:
-            st.session_state["db_pwd_ok"] = True
-            st.rerun()
-        else:
-            st.error("Password errata")
-
-    return False
 
 
 # ── Caching dati ─────────────────────────────────────────────────────────────
@@ -188,11 +166,6 @@ def _render_missing_comuni(df_calendario: pd.DataFrame, df_geo: pd.DataFrame) ->
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
-
-if not check_password():
-    st.stop()
-
-
 def main() -> None:
     # Caricamento dati (cacheato)
     try:

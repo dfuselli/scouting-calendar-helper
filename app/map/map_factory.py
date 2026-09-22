@@ -35,7 +35,7 @@ def create_map(gdf, df_agg):
     # creando comunque un trace vuoto o saltando il secondo layer.
     # ────────────────────────────────────────────────────────────────────────
 
-    fig = px.choropleth_mapbox(
+    fig = px.choropleth_map(
         df_agg,
         geojson=geojson,
         locations="Comune",
@@ -43,7 +43,7 @@ def create_map(gdf, df_agg):
         color="n_squadre",
         range_color=(0, mx),
         color_continuous_scale=dark_greens_with_gray0,
-        mapbox_style="open-street-map",
+        map_style="open-street-map",
         opacity=0.6,
         zoom=8.5,
         center={"lat": CENTER_GPS_COORD[0], "lon": CENTER_GPS_COORD[1]},
@@ -61,7 +61,7 @@ def create_map(gdf, df_agg):
     # ── Secondo trace: solo Villa d'Almè, colore fisso giallo ─────────────
     if not df_highlight_town.empty:
         fig.add_trace(
-            go.Choroplethmapbox(
+            go.Choroplethmap(
                 geojson=geojson,
                 locations=df_highlight_town["Comune"],
                 featureidkey="properties.name",
@@ -82,7 +82,7 @@ def create_map(gdf, df_agg):
 def add_all_boundaries(fig, geojson):
     all_names = [f["properties"]["name"] for f in geojson["features"]]
 
-    outline = go.Choroplethmapbox(
+    outline = go.Choroplethmap(
         geojson=geojson,
         locations=all_names,
         z=[0] * len(all_names),
