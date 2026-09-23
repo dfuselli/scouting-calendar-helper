@@ -15,20 +15,17 @@ HIDE_STREAMLIT_UI = """
 </style>
 """
 
-# ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(page_title=PAGE_TITLE, page_icon="⚽", layout="wide")
 st.markdown(HIDE_STREAMLIT_UI, unsafe_allow_html=True)
 
 GRUPPI = ["Anno", "Societa", "Nome", "Osservatore"]
 
 
-# ------------------------------------------------------------------ dati
 def is_segnalato(row) -> bool:
     return str(row["Segnalato"]).strip().lower() == "true"
 
 
 def voto_numerico(voto) -> float | None:
-    """Voto reale; 0.0 è un placeholder di 'Segnalato' senza giudizio numerico."""
     m = re.match(r"^\s*([0-9]+(?:[.,][0-9]+)?)", str(voto))
     if not m:
         return None
@@ -70,18 +67,15 @@ def load_csv(buffer) -> pd.DataFrame:
     df["Segnalato_num"] = df["NDS"].eq(0).astype(int)
     df["Giocatore_Segnalato"] = df["Nome"].where(df["Segnalato_num"].eq(1))
 
-    # ---- Badge per ClasseOsservatore (pallini) ----
-    CLASSE_BADGE = {
-        "responsabile": "🔴",  # rosso
-        "staff": "🟡",  # giallo
-        "scouting": "⚪",
-    }
+    # ---- Colonne per classe osservatore (flag 0/1) ----
+    def has_classe(classe: str, keyword: str) -> int:
+        return 1 if keyword in str(classe).strip().lower() else 0
 
-    def badge_classe(classe: str) -> str:
-        c = str(classe).strip().lower()
-        return CLASSE_BADGE.get(c, "⚪")  # default grigio
-
-    df["Badge_Classe"] = df["ClasseOsservatore"].apply(badge_classe)
+    df["Has_Staff"] = df["ClasseOsservatore"].apply(lambda c: has_classe(c, "staff"))
+    df["Has_Responsabile"] = df["ClasseOsservatore"].apply(
+        lambda c: has_classe(c, "respons")
+    )
+    df["Has_Scouting"] = df["ClasseOsservatore"].apply(lambda c: has_classe(c, "scout"))
 
     return df
 
@@ -95,6 +89,8 @@ if uploaded is None:
 
 df = load_csv(uploaded)
 
+# DEBUG temporaneo: scommenta per verificare le nuove colonne
+# st.write(df[["ClasseOsservatore", "Has_Staff", "Has_Responsabile", "Has_Scouting"]].drop_duplicates())
 
 # ------------------------------------------------------------------ KPI
 add_markdown_divider()
@@ -119,11 +115,19 @@ st_pivot_table(
     df,
     key="alberatura",
     rows=GRUPPI,
-    values=["Giocatore_Segnalato", "Voto_num", "Badge_Classe"],
+    values=[
+        "Giocatore_Segnalato",
+        "Voto_num",
+        "Has_Staff",
+        "Has_Responsabile",
+        "Has_Scouting",
+    ],
     aggregation={
         "Giocatore_Segnalato": "count_distinct",
         "Voto_num": "avg",
-        "Badge_Classe": "first",  # o "max", tanto è unico per riga
+        "Has_Staff": "max",
+        "Has_Responsabile": "max",
+        "Has_Scouting": "max",
     },
     collapse_row_groups=True,
     row_layout="hierarchy",
@@ -145,9 +149,21 @@ st_pivot_table(
             "width": "medium",
             "alignment": "center",
         },
-        "Badge_Classe": {
-            "label": "Classe osservatore",
-            "help": "Staff 🟡 / Responsabile 🔴 / Altri ⚪",
+        "Has_Staff": {
+            "label": "Staff",
+            "help": "Almeno un osservatore Staff nel gruppo",
+            "width": "small",
+            "alignment": "center",
+        },
+        "Has_Responsabile": {
+            "label": "Responsabile",
+            "help": "Almeno un osservatore Responsabile nel gruppo",
+            "width": "small",
+            "alignment": "center",
+        },
+        "Has_Scouting": {
+            "label": "Scouting",
+            "help": "Almeno un osservatore Scouting nel gruppo",
             "width": "small",
             "alignment": "center",
         },
