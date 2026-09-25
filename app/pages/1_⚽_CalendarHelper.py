@@ -22,7 +22,7 @@ HIDE_STREAMLIT_UI = """
 """
 
 LINKS = [
-    ("CSI", "https://live.centrosportivoitaliano.it/25/Lombardia/Bergamo"),
+    ("CSI", "https://live.centrosportivoitaliano.it/26/Lombardia/Bergamo"),
     (
         "FIGC",
         "https://www.crlombardia.it/comunicati?q=&page=&content_category_value_id=27&delegazioni%5B%5D=13",
