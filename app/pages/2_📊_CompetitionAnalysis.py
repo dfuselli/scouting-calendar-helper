@@ -16,7 +16,7 @@ from ui.nav import page_nav
 PAGE_TITLE = "Mappa Partite"
 LAYOUT_MAP = 55
 LAYOUT_TABLE = 45
-FILTER_COLS = [5, 4, 5, 13]
+FILTER_COLS = [5, 4, 18]
 
 HIDE_STREAMLIT_UI = """
 <style>
@@ -90,9 +90,7 @@ def _build_filter_options(df: pd.DataFrame) -> dict[str, list]:
     return {"comuni": comuni, "categoria": cat, "squadra": squadra}
 
 
-def _apply_filters(
-    df: pd.DataFrame, comuni: list, cat: list, squadra: list
-) -> pd.DataFrame:
+def _apply_filters(df: pd.DataFrame, comuni: list, cat: list) -> pd.DataFrame:
     """Applica i filtri al DataFrame. Puro, nessun effetto collaterale."""
     mask = pd.Series(True, index=df.index)
 
@@ -100,16 +98,14 @@ def _apply_filters(
         mask &= df["Comune"].astype(str).isin(comuni)
     if cat:
         mask &= df["Categoria"].astype(str).isin(cat)
-    if squadra:
-        mask &= df["Casa"].astype(str).isin(squadra)
 
     return df[mask]
 
 
 # ──  UI ──────────────────────────────────────────────────────────────
-def _render_filter_panel(options: dict) -> tuple[list, list, list]:
+def _render_filter_panel(options: dict) -> tuple[list, list]:
     """Renderizza i filtri. Reruns indipendente dal resto della pagina."""
-    col1, col2, col3, _ = st.columns(FILTER_COLS, vertical_alignment="bottom")
+    col1, col2, _ = st.columns(FILTER_COLS, vertical_alignment="bottom")
 
     with col1:
         comuni_sel = st.multiselect("Comune", options=options["comuni"], default=[])
@@ -117,10 +113,7 @@ def _render_filter_panel(options: dict) -> tuple[list, list, list]:
     with col2:
         cat_sel = st.multiselect("Categoria", options=options["categoria"], default=[])
 
-    with col3:
-        squadra_sel = st.multiselect("Squadra", options=options["squadra"], default=[])
-
-    return comuni_sel, cat_sel, squadra_sel
+    return comuni_sel, cat_sel
 
 
 def _render_map(gdf: pd.DataFrame, df_agg: pd.DataFrame, df_view: pd.DataFrame) -> None:
@@ -199,11 +192,36 @@ def main() -> None:
     options = _build_filter_options(df_cleaned)
 
     # Filtri interattivi
-    comuni_sel, cat_sel, squadra_sel = _render_filter_panel(options)
+    comuni_sel, cat_sel = _render_filter_panel(options)
 
     # Applicazione filtri
-    df_view = _apply_filters(df_cleaned, comuni_sel, cat_sel, squadra_sel)
+    df_view = _apply_filters(df_cleaned, comuni_sel, cat_sel)
     df_agg = aggregate_by_comune(df_view, df_geo)
+
+    squadre_per_comune = (
+        df_view.dropna(subset=["Comune_casefold", "Casa", "Categoria"])
+        .groupby("Comune_casefold")
+        .apply(
+            lambda gruppo: "<br>".join(
+                f"• {squadra} ({categoria})"
+                for squadra, categoria in sorted(
+                    set(
+                        zip(
+                            gruppo["Casa"].astype(str),
+                            gruppo["Categoria"].astype(str),
+                        )
+                    )
+                )
+            ),
+            include_groups=False,
+        )
+        .rename("elenco_squadre")  # ty: ignore[no-matching-overload]
+    )
+
+    df_agg = df_agg.copy()
+    df_agg["Comune_casefold"] = _normalize_comune(df_agg["Comune"])
+    df_agg = df_agg.join(squadre_per_comune, on="Comune_casefold")
+    df_agg["elenco_squadre"] = df_agg["elenco_squadre"].fillna("Nessuna squadra")
 
     # Mappa e tabella
     _render_map(gdf, df_agg, df_view)

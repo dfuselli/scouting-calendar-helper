@@ -41,6 +41,7 @@ def create_map(gdf, df_agg):
         locations="Comune",
         featureidkey="properties.name",
         color="n_squadre",
+        custom_data=["n_squadre", "elenco_squadre"],
         range_color=(0, mx),
         color_continuous_scale=dark_greens_with_gray0,
         map_style="open-street-map",
@@ -48,15 +49,20 @@ def create_map(gdf, df_agg):
         zoom=8.5,
         center={"lat": CENTER_GPS_COORD[0], "lon": CENTER_GPS_COORD[1]},
     )
-    fig.update_layout(coloraxis_showscale=False)
-    fig = add_all_boundaries(fig, geojson)
 
     # Passo al trace dati extra per hover: [Comune, n_squadre, case_str]
     fig.update_traces(
-        customdata=df_agg[["case_str_hover"]].to_numpy(),
-        hovertemplate=("<b>%{location}</b><br>%{customdata[0]}<extra></extra>"),
-        selector={"type": "choroplethmapbox"},
+        hovertemplate=(
+            "<b>%{location}</b><br>"
+            "Numero squadre: %{customdata[0]}<br>"
+            "%{customdata[1]}"
+            "<extra></extra>"
+        ),
+        selector={"type": "choroplethmap"},
     )
+
+    fig.update_layout(coloraxis_showscale=False)
+    fig = add_all_boundaries(fig, geojson)
 
     # ── Secondo trace: solo Villa d'Almè, colore fisso giallo ─────────────
     if not df_highlight_town.empty:
