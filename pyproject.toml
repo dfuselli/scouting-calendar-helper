@@ -13,6 +13,7 @@ dependencies = [
     "xlrd==2.0.2",
     "gdown==6.4.0",
     "streamlit-pivot>=0.6.0",
+    "emoji>=2.16.0",
 ]
 
 [dependency-groups]

@@ -1,4 +1,5 @@
 # home.py
+import emoji
 import streamlit as st
 from common.data_handler import load_calendar_data_from_db
 from ui.common import add_markdown_divider
@@ -195,7 +196,8 @@ def main() -> None:
     col_cat, _ = st.columns([4, 16])
     with col_cat:
         opzioni_cat = ["Tutte"] + sorted(
-            st.session_state.original_df["Fascia"].dropna().unique()
+            st.session_state.original_df["Fascia"].dropna().unique(),
+            key=lambda x: emoji.replace_emoji(x, "").strip(),
         )
         categoria = st.selectbox("🔵FIGC 🟡CSI", options=opzioni_cat, index=0)
 
