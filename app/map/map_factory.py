@@ -52,12 +52,7 @@ def create_map(gdf, df_agg):
 
     # Passo al trace dati extra per hover: [Comune, n_squadre, case_str]
     fig.update_traces(
-        hovertemplate=(
-            "<b>%{location}</b><br>"
-            "Numero squadre: %{customdata[0]}<br>"
-            "%{customdata[1]}"
-            "<extra></extra>"
-        ),
+        hovertemplate=("<b>%{location}</b><br>%{customdata[1]}<extra></extra>"),
         selector={"type": "choroplethmap"},
     )
 
