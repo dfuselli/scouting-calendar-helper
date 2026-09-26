@@ -145,10 +145,12 @@ def _render_map(gdf: pd.DataFrame, df_agg: pd.DataFrame, df_view: pd.DataFrame) 
 
 
 def _render_missing_comuni(df_calendario: pd.DataFrame, df_geo: pd.DataFrame) -> None:
-    ########################TO DEBUG BAD COMUNE VALUES #####################################
+
+    ######################## TO DEBUG BAD COMUNE VALUES ########################
+
     left = (
         df_calendario[["Comune_casefold", "Comune", "Casa", "Categoria"]]
-        .dropna(subset=["Comune_casefold", "Casa", "Categoria"])
+        .dropna(subset=["Casa", "Categoria"])
         .drop_duplicates()
     )
 
@@ -156,13 +158,21 @@ def _render_missing_comuni(df_calendario: pd.DataFrame, df_geo: pd.DataFrame) ->
 
     chk = left.merge(right, on="Comune_casefold", how="left", indicator=True)
 
-    only_in_df = chk[chk["_merge"] == "left_only"].sort_values(
-        ["Comune", "Categoria", "Casa"]
+    # Comune nullo/vuoto oppure non trovato in df_geo
+    comune_empty = chk["Comune"].isna() | chk["Comune"].astype("string").str.strip().eq(
+        ""
+    )
+
+    comune_not_found = chk["_merge"].eq("left_only")
+
+    only_in_df = chk[comune_empty | comune_not_found].sort_values(
+        ["Comune", "Categoria", "Casa"], na_position="first"
     )[["Comune", "Comune_casefold", "Categoria", "Casa"]]
 
-    st.write("DEBUG - Squadre con Comune non trovato:")
+    st.write("Squadre Extra Provincia o Comuni non trovati:")
     st.dataframe(only_in_df, width="stretch", hide_index=True)
-    #############################################################
+
+    ###########################################################################
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
@@ -199,8 +209,8 @@ def main() -> None:
     _render_map(gdf, df_agg, df_view)
     add_markdown_divider()
 
-    # _render_missing_comuni(df_calendario, df_geo)
-    # add_markdown_divider()
+    _render_missing_comuni(df_calendario, df_geo)
+    add_markdown_divider()
 
 
 try:
