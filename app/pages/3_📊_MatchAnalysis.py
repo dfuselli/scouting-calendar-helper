@@ -67,7 +67,6 @@ def load_csv(buffer) -> pd.DataFrame:
     df["Segnalato_num"] = df["NDS"].eq(0).astype(int)
     df["Giocatore_Segnalato"] = df["Nome"].where(df["Segnalato_num"].eq(1))
 
-    # ---- Colonne per classe osservatore (flag 0/1) ----
     def has_classe(classe: str, keyword: str) -> int:
         return 1 if keyword in str(classe).strip().lower() else 0
 
@@ -87,100 +86,217 @@ if uploaded is None:
     st.info("👆 Carica un file CSV per iniziare.")
     st.stop()
 
+
 df = load_csv(uploaded)
 
 # DEBUG temporaneo: scommenta per verificare le nuove colonne
 # st.write(df[["ClasseOsservatore", "Has_Staff", "Has_Responsabile", "Has_Scouting"]].drop_duplicates())
 
-# ------------------------------------------------------------------ KPI
-add_markdown_divider()
-tot = len(df)
-n_segnalati = int(df["Segnalato_num"].sum())
-n_nds = int(df["NDS"].sum())
-n_partite = int(df.loc[df["Partita"].ne(""), "Partita"].nunique())
-n_giocatori_segnalati = int(df["Giocatore_Segnalato"].nunique())
-media = df["Voto_num"].mean()
 
-c1, c2, c3, c4, c5 = st.columns(5)
-c1.metric("Dataset", tot)
-c2.metric("Partite osservate", n_partite)
-c3.metric("Giocatori segnalati (distinti)", n_giocatori_segnalati)
-c4.metric("Visti senza segnalazione (❌)", n_nds)
-c5.metric("Voto medio", f"{media:.2f}" if pd.notna(media) else "—")
+tab_pivot, tab_grafici, tab_mappe = st.tabs(["Pivot", "Grafici", "Mappe"])
 
+with tab_pivot:
+    add_markdown_divider()
+    tot = len(df)
+    n_segnalati = int(df["Segnalato_num"].sum())
+    n_nds = int(df["NDS"].sum())
+    n_partite = int(df.loc[df["Partita"].ne(""), "Partita"].nunique())
+    n_giocatori_segnalati = int(df["Giocatore_Segnalato"].nunique())
+    media = df["Voto_num"].mean()
 
-# ================================================== vista 1: alberatura ==
-add_markdown_divider()
-st_pivot_table(
-    df,
-    key="alberatura",
-    rows=GRUPPI,
-    values=[
-        "Giocatore_Segnalato",
-        "Voto_num",
-        "Has_Staff",
-        "Has_Responsabile",
-        "Has_Scouting",
-    ],
-    aggregation={
-        "Giocatore_Segnalato": "count_distinct",
-        "Voto_num": "avg",
-        "Has_Staff": "max",
-        "Has_Responsabile": "max",
-        "Has_Scouting": "max",
-    },
-    collapse_row_groups=True,
-    row_layout="hierarchy",
-    show_subtotals=True,
-    values_axis="columns",
-    number_format={"Giocatore_Segnalato": "0", "Voto_num": ".2f"},
-    empty_cell_value="—",
-    style="striped",
-    column_config={
-        "Giocatore_Segnalato": {
-            "label": "Giocatori segnalati",
-            "help": "Numero di giocatori distinti segnalati (Segnalato = True)",
-            "width": "medium",
-            "alignment": "center",
+    c1, c2, c3, c4, c5 = st.columns(5)
+    c1.metric("Dataset", tot)
+    c2.metric("Partite osservate", n_partite)
+    c3.metric("Giocatori segnalati (distinti)", n_giocatori_segnalati)
+    c4.metric("Visti senza segnalazione (❌)", n_nds)
+    c5.metric("Voto medio", f"{media:.2f}" if pd.notna(media) else "—")
+
+    add_markdown_divider()
+    st_pivot_table(
+        df,
+        key="alberatura",
+        rows=GRUPPI,
+        values=[
+            "Giocatore_Segnalato",
+            "Voto_num",
+            "Has_Staff",
+            "Has_Responsabile",
+            "Has_Scouting",
+        ],
+        aggregation={
+            "Giocatore_Segnalato": "count_distinct",
+            "Voto_num": "avg",
+            "Has_Staff": "max",
+            "Has_Responsabile": "max",
+            "Has_Scouting": "max",
         },
-        "Voto_num": {
-            "label": "Voto medio",
-            "help": "Media dei voti numerici (0.0 = segnalato senza giudizio, escluso)",
-            "width": "medium",
-            "alignment": "center",
+        collapse_row_groups=True,
+        row_layout="hierarchy",
+        show_subtotals=True,
+        values_axis="columns",
+        number_format={"Giocatore_Segnalato": "0", "Voto_num": ".2f"},
+        empty_cell_value="—",
+        style="striped",
+        column_config={
+            "Giocatore_Segnalato": {
+                "label": "Giocatori segnalati",
+                "help": "Numero di giocatori distinti segnalati (Segnalato = True)",
+                "width": "medium",
+                "alignment": "center",
+            },
+            "Voto_num": {
+                "label": "Voto medio",
+                "help": "Media dei voti numerici (0.0 = segnalato senza giudizio, escluso)",
+                "width": "medium",
+                "alignment": "center",
+            },
+            "Has_Staff": {
+                "label": "Staff",
+                "help": "Almeno un osservatore Staff nel gruppo",
+                "width": "small",
+                "alignment": "center",
+            },
+            "Has_Responsabile": {
+                "label": "Responsabile",
+                "help": "Almeno un osservatore Responsabile nel gruppo",
+                "width": "small",
+                "alignment": "center",
+            },
+            "Has_Scouting": {
+                "label": "Scouting",
+                "help": "Almeno un osservatore Scouting nel gruppo",
+                "width": "small",
+                "alignment": "center",
+            },
+            "Nome": {"label": "Giocatore"},
         },
-        "Has_Staff": {
-            "label": "Staff",
-            "help": "Almeno un osservatore Staff nel gruppo",
-            "width": "small",
-            "alignment": "center",
-        },
-        "Has_Responsabile": {
-            "label": "Responsabile",
-            "help": "Almeno un osservatore Responsabile nel gruppo",
-            "width": "small",
-            "alignment": "center",
-        },
-        "Has_Scouting": {
-            "label": "Scouting",
-            "help": "Almeno un osservatore Scouting nel gruppo",
-            "width": "small",
-            "alignment": "center",
-        },
-        "Nome": {"label": "Giocatore"},
-    },
-    filter_fields=[
-        "Anno",
-        "Societa",
-        "Stato",
-        "Osservatore",
-        "ClasseOsservatore",
-        "Partita",
-    ],
-    enable_drilldown=True,
-    max_height=650,
-    export_filename="incrocio_segnalazioni_alberatura",
-)
+        filter_fields=[
+            "Anno",
+            "Societa",
+            "Stato",
+            "Osservatore",
+            "ClasseOsservatore",
+            "Partita",
+        ],
+        enable_drilldown=True,
+        max_height=650,
+        export_filename="incrocio_segnalazioni_alberatura",
+    )
+
+with tab_grafici:
+    import altair as alt
+
+    classi = ["Responsabile", "Scouting", "Staff", "Segnalazione Esterna"]
+    colori = ["#F2C94C", "#E53935", "#808080", "#F28C28"]
+
+    # Evita di contare più volte la stessa partita per lo stesso osservatore.
+    partite = df.loc[
+        df["Partita"].ne("") & df["Osservatore"].ne(""),
+        ["Partita", "Osservatore", "ClasseOsservatore"],
+    ].drop_duplicates()
+
+    def classe_grafico(valore: str) -> str | None:
+        classe = valore.strip().lower()
+        if "respons" in classe:
+            return "Responsabile"
+        if "scout" in classe:
+            return "Scouting"
+        if "esterna" in classe:
+            return "Segnalazione Esterna"
+        return "Staff"
+
+    partite["Classe"] = partite["ClasseOsservatore"].map(classe_grafico)
+    partite = partite.dropna(subset=["Classe"])
+
+    with st.expander("Partite visionate per osservatore e classe", expanded=False):
+        conteggi = (
+            partite.groupby(["Osservatore", "Classe"])["Partita"]
+            .nunique()
+            .reset_index(name="Partite visionate")
+        )
+
+        conteggi["Ordine_classe"] = pd.Categorical(
+            conteggi["Classe"],
+            categories=classi,
+            ordered=True,
+        )
+
+        ordine_osservatori = (
+            conteggi.sort_values(["Ordine_classe", "Osservatore"])["Osservatore"]
+            .drop_duplicates()
+            .tolist()
+        )
+
+        grafico = (
+            alt.Chart(conteggi)
+            .mark_bar()
+            .encode(
+                x=alt.X("Partite visionate:Q", title="Numero di partite visionate"),
+                y=alt.Y(
+                    "Osservatore:N",
+                    title="Osservatore",
+                    sort=ordine_osservatori,
+                ),
+                color=alt.Color(
+                    "Classe:N",
+                    scale=alt.Scale(domain=classi, range=colori),
+                    legend=alt.Legend(title="Classe osservatore"),
+                ),
+                tooltip=[
+                    alt.Tooltip("Osservatore:N"),
+                    alt.Tooltip("Classe:N"),
+                    alt.Tooltip("Partite visionate:Q"),
+                ],
+            )
+            .properties(height=max(300, 32 * conteggi["Osservatore"].nunique()))
+        )
+
+        st.altair_chart(grafico, width="stretch")
+
+    with st.expander("Partite visionate per classe osservatore", expanded=False):
+        conteggi_classi = (
+            partite.groupby("Classe")["Partita"]
+            .nunique()
+            .reindex(classi, fill_value=0)
+            .reset_index(name="Partite visionate")
+        )
+
+        if partite.empty:
+            st.info("Nessuna partita disponibile per il grafico.")
+        else:
+            grafico_classi = (
+                alt.Chart(conteggi_classi)
+                .mark_bar()
+                .encode(
+                    x=alt.X(
+                        "Partite visionate:Q",
+                        title="Numero di partite visionate",
+                    ),
+                    y=alt.Y(
+                        "Classe:N",
+                        title="Classe osservatore",
+                        sort=classi,
+                    ),
+                    color=alt.Color(
+                        "Classe:N",
+                        scale=alt.Scale(domain=classi, range=colori),
+                        legend=None,
+                    ),
+                    tooltip=[
+                        alt.Tooltip("Classe:N", title="Classe"),
+                        alt.Tooltip(
+                            "Partite visionate:Q",
+                            title="Partite visionate",
+                        ),
+                    ],
+                )
+                .properties(height=220)
+            )
+
+            st.altair_chart(grafico_classi, width="stretch")
+
+with tab_mappe:
+    pass
 
 add_markdown_divider()
 page_nav()
