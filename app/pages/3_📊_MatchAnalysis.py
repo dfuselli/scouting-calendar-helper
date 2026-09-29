@@ -26,7 +26,8 @@ st.markdown(HIDE_STREAMLIT_UI, unsafe_allow_html=True)
 GRUPPI = ["Anno", "Societa", "Nome", "Osservatore"]
 
 
-def reports_theme():
+@alt.theme.register("reports_theme", enable=True)
+def reports_theme() -> alt.theme.ThemeConfig:
     return {
         "config": {
             # Sfondo SOLO del grafico Altair
@@ -58,15 +59,11 @@ def reports_theme():
                 "category": [
                     "#D0372D",  # rosso
                     "#F7BE00",  # giallo
-                    "#333333",
-                ]
+                    "#333333",  # grigio scuro
+                ],
             },
         }
     }
-
-
-alt.themes.register("reports_theme", reports_theme)
-alt.themes.enable("reports_theme")
 
 
 def is_segnalato(row) -> bool:
@@ -104,8 +101,7 @@ def load_csv(buffer) -> pd.DataFrame:
     df["Osservatore"] = df["Osservatore"].astype(str).str.strip()
     df["ClasseOsservatore"] = df["ClasseOsservatore"].astype(str).str.strip()
     df["Partita"] = df["Partita"].astype(str).str.strip()
-    # df["Comune"] = df["Comune"].astype(str).str.strip()
-    df["Comune"] = ""
+    df["Comune"] = df["Comune"].astype(str).str.strip()
 
     df["Data_Partita_dt"] = pd.to_datetime(
         df["Data_Partita"], format="%d/%m/%Y", errors="coerce"
@@ -576,6 +572,27 @@ with tab_mappe:
 
     segnalazioni["Comune_key"] = normalizza_comune(segnalazioni["Comune"])
 
+    tabella_comuni = (
+        df.loc[
+            df["Anno"].eq(str(annata_mappa))
+            & df["Segnalato_num"].eq(1)
+            & df["Comune"].ne("")
+            & df["Nome"].ne(""),
+            ["Comune", "Societa", "Nome"],
+        ]
+        .drop_duplicates()
+        .groupby(["Comune", "Societa"], as_index=False)
+        .agg(
+            **{
+                "Giocatori segnalati": ("Nome", "nunique"),
+            }
+        )
+        .sort_values(
+            ["Comune", "Giocatori segnalati"],
+            ascending=[True, False],
+        )
+    )
+
     # Elenco dei nomi distinti per comune, senza righe duplicate nel tooltip.
     nomi_per_comune = (
         segnalazioni.groupby("Comune_key")["Nome"]
@@ -667,7 +684,37 @@ with tab_mappe:
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
     )
 
-    st.plotly_chart(fig, width="stretch")
+    col_mappa, col_tabella = st.columns([2, 2])
+
+    with col_mappa:
+        st.plotly_chart(
+            fig,
+            width="stretch",
+        )
+
+    with col_tabella:
+        st.markdown("### Giocatori segnalati")
+
+        st.dataframe(
+            tabella_comuni,
+            width="stretch",
+            hide_index=True,
+            column_config={
+                "Comune": st.column_config.TextColumn(
+                    "Comune",
+                    width="medium",
+                ),
+                "Societa": st.column_config.TextColumn(
+                    "Società",
+                    width="medium",
+                ),
+                "Giocatori segnalati": st.column_config.NumberColumn(
+                    "Giocatori segnalati",
+                    format="%d",
+                    width="small",
+                ),
+            },
+        )
 
 add_markdown_divider()
 page_nav()

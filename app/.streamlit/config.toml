@@ -7,3 +7,9 @@ hideTopBar = true
 
 [server]
 runOnSave = true
+
+#[theme]
+# base = "light"
+# backgroundColor = "#FFFFFF"
+# secondaryBackgroundColor = "#FFFFFF"
+# textColor = "#000000"
