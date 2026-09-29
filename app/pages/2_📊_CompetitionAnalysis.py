@@ -199,16 +199,17 @@ def main() -> None:
     df_agg = aggregate_by_comune(df_view, df_geo)
 
     squadre_per_comune = (
-        df_view.dropna(subset=["Comune_casefold", "Casa", "Categoria"])
+        df_view.dropna(subset=["Comune_casefold", "Casa", "Categoria", "Federazione"])
         .groupby("Comune_casefold")
         .apply(
             lambda gruppo: "<br>".join(
-                f"• {squadra} ({categoria})"
-                for squadra, categoria in sorted(
+                f"• {federazione} {squadra} ({categoria})"
+                for squadra, categoria, federazione in sorted(
                     set(
                         zip(
                             gruppo["Casa"].astype(str),
                             gruppo["Categoria"].astype(str),
+                            gruppo["Federazione"].astype(str),
                         )
                     )
                 )

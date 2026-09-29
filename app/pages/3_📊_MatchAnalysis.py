@@ -1,7 +1,11 @@
+import json
 import re
 
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
+from map.constants import CENTER_GPS_COORD
+from map.data_engine import load_geojson_data
 from streamlit_pivot import st_pivot_table
 from ui.common import add_markdown_divider
 from ui.nav import page_nav
@@ -56,6 +60,8 @@ def load_csv(buffer) -> pd.DataFrame:
     df["Osservatore"] = df["Osservatore"].astype(str).str.strip()
     df["ClasseOsservatore"] = df["ClasseOsservatore"].astype(str).str.strip()
     df["Partita"] = df["Partita"].astype(str).str.strip()
+    # df["Comune"] = df["Comune"].astype(str).str.strip()
+    df["Comune"] = ""
 
     df["Data_Partita_dt"] = pd.to_datetime(
         df["Data_Partita"], format="%d/%m/%Y", errors="coerce"
@@ -481,7 +487,141 @@ with tab_grafici:
     render_grafici(df.loc[mask])
 
 with tab_mappe:
-    pass
+
+    @st.cache_data(ttl=60 * 60, show_spinner=False)
+    def load_comuni_geojson() -> dict:
+        gdf = load_geojson_data()
+        return json.loads(gdf.to_json())
+
+    def normalizza_comune(series: pd.Series) -> pd.Series:
+        return (
+            series.astype("string")
+            .str.replace("\u200b", "", regex=False)
+            .str.replace("\u00a0", " ", regex=False)
+            .str.replace(r"\s+", " ", regex=True)
+            .str.strip()
+            .str.casefold()
+        )
+
+    annata_mappa = st.selectbox(
+        "Annata",
+        options=list(range(2010, 2026)),
+        index=0,
+        key="annata_mappa",
+    )
+
+    try:
+        geojson = load_comuni_geojson()
+    except Exception as e:  # noqa: BLE001
+        st.error(f"Errore durante il caricamento del GeoJSON: {e}")
+        st.stop()
+
+    nomi_geo = [feature["properties"]["name"] for feature in geojson["features"]]
+    comuni_geo = pd.DataFrame({"Comune_geo": nomi_geo})
+    comuni_geo["Comune_key"] = normalizza_comune(comuni_geo["Comune_geo"])
+
+    segnalazioni = df.loc[
+        df["Anno"].eq(str(annata_mappa))
+        & df["Segnalato_num"].eq(1)
+        & df["Comune"].ne("")
+        & df["Nome"].ne(""),
+        ["Comune", "Nome"],
+    ].copy()
+
+    segnalazioni["Comune_key"] = normalizza_comune(segnalazioni["Comune"])
+
+    # Elenco dei nomi distinti per comune, senza righe duplicate nel tooltip.
+    nomi_per_comune = (
+        segnalazioni.groupby("Comune_key")["Nome"]
+        .apply(lambda nomi: "<br>".join(f"• {nome}" for nome in sorted(set(nomi))))
+        .rename("Nomi")
+    )
+
+    comuni_mappa = comuni_geo.copy()
+    comuni_mappa["Segnalazioni"] = (
+        segnalazioni.groupby("Comune_key")
+        .size()
+        .reindex(comuni_mappa["Comune_key"], fill_value=0)
+        .to_numpy()
+    )
+    comuni_mappa["Nomi"] = (
+        comuni_mappa["Comune_key"].map(nomi_per_comune).fillna("Nessuna segnalazione")
+    )
+
+    # Mappa principale: grigio senza segnalazioni, verde con segnalazioni.
+    comuni_mappa["Con segnalazioni"] = comuni_mappa["Segnalazioni"].gt(0).astype(int)
+
+    fig = go.Figure(
+        go.Choroplethmap(
+            geojson=geojson,
+            locations=comuni_mappa["Comune_geo"],
+            featureidkey="properties.name",
+            z=comuni_mappa["Con segnalazioni"],
+            customdata=comuni_mappa[["Segnalazioni", "Nomi"]].to_numpy(),
+            colorscale=[
+                [0.0, "#D3D3D3"],
+                [0.499, "#D3D3D3"],
+                [0.5, "#005723"],
+                [1.0, "#005723"],
+            ],
+            zmin=0,
+            zmax=1,
+            showscale=False,
+            marker_opacity=0.65,
+            marker_line_width=1,
+            marker_line_color="rgba(0,0,0,0.55)",
+            hovertemplate=(
+                "<b>%{location}</b>"
+                "<br>Segnalazioni: %{customdata[0]}"
+                "<br>%{customdata[1]}"
+                "<extra></extra>"
+            ),
+        )
+    )
+
+    # Secondo trace: Villa d'Almè sempre gialla, anche senza segnalazioni.
+    villa = comuni_mappa.loc[comuni_mappa["Comune_key"].eq("villa d'alme'")]
+
+    if not villa.empty:
+        fig.add_trace(
+            go.Choroplethmap(
+                geojson=geojson,
+                locations=villa["Comune_geo"],
+                featureidkey="properties.name",
+                z=[1] * len(villa),
+                customdata=villa[["Segnalazioni", "Nomi"]].to_numpy(),
+                colorscale=[[0, "#FFD700"], [1, "#FFD700"]],
+                zmin=0,
+                zmax=1,
+                showscale=False,
+                marker_opacity=0.65,
+                marker_line_width=1,
+                marker_line_color="rgba(0,0,0,0.55)",
+                hovertemplate=(
+                    "<b>%{location}</b>"
+                    "<br>Segnalazioni: %{customdata[0]}"
+                    "<br>%{customdata[1]}"
+                    "<extra></extra>"
+                ),
+                name="Villa d'Almè",
+            )
+        )
+    else:
+        st.warning("Villa d'Almè non trovata nei nomi del GeoJSON.")
+
+    fig.update_layout(
+        map={
+            "style": "open-street-map",
+            "zoom": 8.5,
+            "center": {
+                "lat": CENTER_GPS_COORD[0],
+                "lon": CENTER_GPS_COORD[1],
+            },
+        },
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+    )
+
+    st.plotly_chart(fig, width="stretch")
 
 add_markdown_divider()
 page_nav()

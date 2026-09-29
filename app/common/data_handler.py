@@ -117,8 +117,10 @@ def cleanup_calendar_data(df_calendario: pd.DataFrame) -> pd.DataFrame:
 
     # 1) Tieni solo le colonne che servono e fai distinct (Casa, Categoria, Comune)
     df_dist = (
-        df_calendario[["Casa", "Categoria", "Comune", "Comune_casefold"]]
-        .dropna(subset=["Comune", "Casa", "Categoria", "Comune_casefold"])
+        df_calendario[["Casa", "Categoria", "Comune", "Comune_casefold", "Federazione"]]
+        .dropna(
+            subset=["Comune", "Casa", "Categoria", "Comune_casefold", "Federazione"]
+        )
         .drop_duplicates()
     )
 
