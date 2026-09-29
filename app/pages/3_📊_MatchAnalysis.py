@@ -189,14 +189,8 @@ with tab_grafici:
     classi = ["Responsabile", "Scouting", "Staff", "Segnalazione Esterna"]
     colori = ["#F2C94C", "#E53935", "#808080", "#F28C28"]
 
-    # Evita di contare più volte la stessa partita per lo stesso osservatore.
-    partite = df.loc[
-        df["Partita"].ne("") & df["Osservatore"].ne(""),
-        ["Partita", "Osservatore", "ClasseOsservatore"],
-    ].drop_duplicates()
-
     def classe_grafico(valore: str) -> str | None:
-        classe = valore.strip().lower()
+        classe = str(valore).strip().lower()
         if "respons" in classe:
             return "Responsabile"
         if "scout" in classe:
@@ -205,95 +199,286 @@ with tab_grafici:
             return "Segnalazione Esterna"
         return "Staff"
 
-    partite["Classe"] = partite["ClasseOsservatore"].map(classe_grafico)
-    partite = partite.dropna(subset=["Classe"])
+    def render_grafici(df_filtrato: pd.DataFrame) -> None:
+        partite = df_filtrato.loc[
+            df_filtrato["Partita"].ne("") & df_filtrato["Osservatore"].ne(""),
+            ["Anno", "Partita", "Osservatore", "ClasseOsservatore"],
+        ].drop_duplicates()
+        partite["Classe"] = partite["ClasseOsservatore"].map(classe_grafico)
 
-    with st.expander("Partite visionate per osservatore e classe", expanded=False):
-        conteggi = (
-            partite.groupby(["Osservatore", "Classe"])["Partita"]
-            .nunique()
-            .reset_index(name="Partite visionate")
-        )
+        segnalati = df_filtrato.loc[
+            df_filtrato["Giocatore_Segnalato"].notna()
+            & df_filtrato["Giocatore_Segnalato"].ne("")
+            & df_filtrato["Osservatore"].ne(""),
+            ["Anno", "Giocatore_Segnalato", "Osservatore", "ClasseOsservatore"],
+        ].drop_duplicates()
+        segnalati["Classe"] = segnalati["ClasseOsservatore"].map(classe_grafico)
 
-        conteggi["Ordine_classe"] = pd.Categorical(
-            conteggi["Classe"],
-            categories=classi,
-            ordered=True,
-        )
+        if partite.empty and segnalati.empty:
+            st.info("Nessun dato disponibile in questo intervallo.")
+            return
 
-        ordine_osservatori = (
-            conteggi.sort_values(["Ordine_classe", "Osservatore"])["Osservatore"]
-            .drop_duplicates()
-            .tolist()
-        )
+        scala_classi = alt.Scale(domain=classi, range=colori)
 
-        grafico = (
-            alt.Chart(conteggi)
-            .mark_bar()
-            .encode(
-                x=alt.X("Partite visionate:Q", title="Numero di partite visionate"),
-                y=alt.Y(
-                    "Osservatore:N",
-                    title="Osservatore",
-                    sort=ordine_osservatori,
-                ),
-                color=alt.Color(
-                    "Classe:N",
-                    scale=alt.Scale(domain=classi, range=colori),
-                    legend=alt.Legend(title="Classe osservatore"),
-                ),
-                tooltip=[
-                    alt.Tooltip("Osservatore:N"),
-                    alt.Tooltip("Classe:N"),
-                    alt.Tooltip("Partite visionate:Q"),
-                ],
+        def ordine_osservatori_per_classe(dati: pd.DataFrame) -> list[str]:
+            ordinati = dati.copy()
+            ordinati["Ordine_classe"] = pd.Categorical(
+                ordinati["Classe"], categories=classi, ordered=True
             )
-            .properties(height=max(300, 32 * conteggi["Osservatore"].nunique()))
-        )
+            return (
+                ordinati.sort_values(["Ordine_classe", "Osservatore"])["Osservatore"]
+                .drop_duplicates()
+                .tolist()
+            )
 
-        st.altair_chart(grafico, width="stretch")
-
-    with st.expander("Partite visionate per classe osservatore", expanded=False):
-        conteggi_classi = (
-            partite.groupby("Classe")["Partita"]
-            .nunique()
-            .reindex(classi, fill_value=0)
-            .reset_index(name="Partite visionate")
-        )
-
-        if partite.empty:
-            st.info("Nessuna partita disponibile per il grafico.")
-        else:
-            grafico_classi = (
-                alt.Chart(conteggi_classi)
+        def barre_orizzontali(
+            dati: pd.DataFrame,
+            y_col: str,
+            y_ordine: list[str],
+            valore: str,
+            titolo_valore: str,
+            altezza: int,
+        ) -> alt.Chart:
+            return (
+                alt.Chart(dati)
                 .mark_bar()
                 .encode(
                     x=alt.X(
-                        "Partite visionate:Q",
-                        title="Numero di partite visionate",
+                        f"{valore}:Q",
+                        title=titolo_valore,
+                        axis=alt.Axis(format="d", tickMinStep=1),
                     ),
-                    y=alt.Y(
-                        "Classe:N",
-                        title="Classe osservatore",
-                        sort=classi,
-                    ),
+                    y=alt.Y(f"{y_col}:N", sort=y_ordine),
                     color=alt.Color(
                         "Classe:N",
-                        scale=alt.Scale(domain=classi, range=colori),
-                        legend=None,
+                        scale=scala_classi,
+                        legend=alt.Legend(title="Classe osservatore"),
                     ),
+                    order=alt.Order("Classe:N", sort="descending"),
                     tooltip=[
+                        alt.Tooltip(f"{y_col}:N"),
                         alt.Tooltip("Classe:N", title="Classe"),
-                        alt.Tooltip(
-                            "Partite visionate:Q",
-                            title="Partite visionate",
-                        ),
+                        alt.Tooltip(f"{valore}:Q", title=titolo_valore),
                     ],
                 )
-                .properties(height=220)
+                .properties(height=altezza)
             )
 
-            st.altair_chart(grafico_classi, width="stretch")
+        if not partite.empty:
+            st.markdown("**Partite visionate per osservatore e classe**")
+            partite_oss = (
+                partite.groupby(["Osservatore", "Classe"])["Partita"]
+                .nunique()
+                .reset_index(name="Partite visionate")
+            )
+            st.altair_chart(
+                barre_orizzontali(
+                    partite_oss,
+                    y_col="Osservatore",
+                    y_ordine=ordine_osservatori_per_classe(partite_oss),
+                    valore="Partite visionate",
+                    titolo_valore="Numero di partite visionate",
+                    altezza=max(300, 32 * partite_oss["Osservatore"].nunique()),
+                ),
+                width="stretch",
+            )
+
+            st.markdown("**Partite visionate per annata e classe osservatore**")
+            partite_anno = (
+                partite.loc[partite["Anno"].ne("")]
+                .groupby(["Anno", "Classe"])["Partita"]
+                .nunique()
+                .reset_index(name="Partite visionate")
+            )
+            if not partite_anno.empty:
+                ordine_anni = sorted(partite_anno["Anno"].unique().tolist())
+                st.altair_chart(
+                    barre_orizzontali(
+                        partite_anno,
+                        y_col="Anno",
+                        y_ordine=ordine_anni,
+                        valore="Partite visionate",
+                        titolo_valore="Numero di partite visionate",
+                        altezza=max(220, 40 * len(ordine_anni)),
+                    ),
+                    width="stretch",
+                )
+
+        if segnalati.empty:
+            st.info("Nessun giocatore segnalato in questo intervallo.")
+            return
+
+        st.markdown("**Giocatori segnalati per osservatore e classe**")
+        segn_oss = (
+            segnalati.groupby(["Osservatore", "Classe"])["Giocatore_Segnalato"]
+            .nunique()
+            .reset_index(name="Giocatori segnalati")
+        )
+        st.altair_chart(
+            barre_orizzontali(
+                segn_oss,
+                y_col="Osservatore",
+                y_ordine=ordine_osservatori_per_classe(segn_oss),
+                valore="Giocatori segnalati",
+                titolo_valore="Numero di giocatori segnalati (distinti)",
+                altezza=max(300, 32 * segn_oss["Osservatore"].nunique()),
+            ),
+            width="stretch",
+        )
+
+        st.markdown("**Giocatori segnalati per annata e classe osservatore**")
+        segn_anno = (
+            segnalati.loc[segnalati["Anno"].ne("")]
+            .groupby(["Anno", "Classe"])["Giocatore_Segnalato"]
+            .nunique()
+            .reset_index(name="Giocatori segnalati")
+        )
+        if not segn_anno.empty:
+            ordine_anni = sorted(segn_anno["Anno"].unique().tolist())
+            st.altair_chart(
+                barre_orizzontali(
+                    segn_anno,
+                    y_col="Anno",
+                    y_ordine=ordine_anni,
+                    valore="Giocatori segnalati",
+                    titolo_valore="Numero di giocatori segnalati (distinti)",
+                    altezza=max(220, 40 * len(ordine_anni)),
+                ),
+                width="stretch",
+            )
+        stati = [
+            "Segnalato",
+            "Da rivedere",
+            "Da prendere",
+            "Da provare",
+            "Negativo",
+            "Da seguire",
+            "Preso",
+            "Scartato",
+            "Da seguire con attenzione",
+        ]
+        colori_stati = [
+            "#4E79A7",
+            "#F28E2B",
+            "#59A14F",
+            "#E15759",
+            "#9C755F",
+            "#76B7B2",
+            "#B07AA1",
+            "#BAB0AC",
+            "#EDC948",
+        ]
+        scala_stati = alt.Scale(domain=stati, range=colori_stati)
+
+        dati_stati = df_filtrato.loc[
+            df_filtrato["Segnalato_num"].eq(1)
+            & df_filtrato["Nome"].ne("")
+            & df_filtrato["Stato"].isin(stati),
+            ["Anno", "Nome", "Osservatore", "Stato"],
+        ].drop_duplicates()
+
+        if dati_stati.empty:
+            st.info("Nessun giocatore segnalato con uno degli stati previsti.")
+            return
+
+        st.markdown("**Giocatori segnalati per osservatore e stato**")
+        stati_oss = (
+            dati_stati.loc[dati_stati["Osservatore"].ne("")]
+            .groupby(["Osservatore", "Stato"])["Nome"]
+            .nunique()
+            .reset_index(name="Giocatori segnalati")
+        )
+        if not stati_oss.empty:
+            ordine_osservatori = (
+                stati_oss.groupby("Osservatore")["Giocatori segnalati"]
+                .sum()
+                .sort_values(ascending=False)
+                .index.tolist()
+            )
+            grafico_stati_oss = (
+                alt.Chart(stati_oss)
+                .mark_bar()
+                .encode(
+                    x=alt.X(
+                        "Giocatori segnalati:Q",
+                        title="Numero di giocatori segnalati (distinti)",
+                        axis=alt.Axis(format="d", tickMinStep=1),
+                    ),
+                    y=alt.Y(
+                        "Osservatore:N",
+                        title="Osservatore",
+                        sort=ordine_osservatori,
+                    ),
+                    color=alt.Color(
+                        "Stato:N",
+                        scale=scala_stati,
+                        legend=alt.Legend(title="Stato"),
+                    ),
+                    tooltip=[
+                        alt.Tooltip("Osservatore:N"),
+                        alt.Tooltip("Stato:N"),
+                        alt.Tooltip("Giocatori segnalati:Q"),
+                    ],
+                )
+                .properties(height=max(300, 32 * stati_oss["Osservatore"].nunique()))
+            )
+            st.altair_chart(grafico_stati_oss, width="stretch")
+
+        st.markdown("**Giocatori segnalati per annata e stato**")
+        stati_anno = (
+            dati_stati.loc[dati_stati["Anno"].ne("")]
+            .groupby(["Anno", "Stato"])["Nome"]
+            .nunique()
+            .reset_index(name="Giocatori segnalati")
+        )
+        if not stati_anno.empty:
+            ordine_anni = sorted(stati_anno["Anno"].unique().tolist())
+            grafico_stati_anno = (
+                alt.Chart(stati_anno)
+                .mark_bar()
+                .encode(
+                    x=alt.X(
+                        "Giocatori segnalati:Q",
+                        title="Numero di giocatori segnalati (distinti)",
+                        axis=alt.Axis(format="d", tickMinStep=1),
+                    ),
+                    y=alt.Y("Anno:N", title="Annata", sort=ordine_anni),
+                    color=alt.Color(
+                        "Stato:N",
+                        scale=scala_stati,
+                        legend=alt.Legend(title="Stato"),
+                    ),
+                    tooltip=[
+                        alt.Tooltip("Anno:N"),
+                        alt.Tooltip("Stato:N"),
+                        alt.Tooltip("Giocatori segnalati:Q"),
+                    ],
+                )
+                .properties(height=max(220, 40 * len(ordine_anni)))
+            )
+            st.altair_chart(grafico_stati_anno, width="stretch")
+
+    OPZIONI_SEZIONI = {
+        "Tutto": (None, None),
+        "Agonistica": ("2010", "2013"),
+        "Settore di Base": ("2014", "2017"),
+        "Scuola Calcio": ("2018", None),
+    }
+
+    sezione = st.radio(
+        "Settore",
+        options=list(OPZIONI_SEZIONI.keys()),
+        horizontal=True,
+    )
+
+    anno_da, anno_a = OPZIONI_SEZIONI[sezione]
+    mask = pd.Series(True, index=df.index)
+    if anno_da is not None:
+        mask &= df["Anno"].ge(anno_da)
+    if anno_a is not None:
+        mask &= df["Anno"].le(anno_a)
+
+    render_grafici(df.loc[mask])
 
 with tab_mappe:
     pass
