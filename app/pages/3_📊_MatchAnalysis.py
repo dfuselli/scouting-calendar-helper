@@ -1,6 +1,7 @@
 import json
 import re
 
+import altair as alt
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
@@ -23,6 +24,49 @@ st.set_page_config(page_title=PAGE_TITLE, page_icon="⚽", layout="wide")
 st.markdown(HIDE_STREAMLIT_UI, unsafe_allow_html=True)
 
 GRUPPI = ["Anno", "Societa", "Nome", "Osservatore"]
+
+
+def reports_theme():
+    return {
+        "config": {
+            # Sfondo SOLO del grafico Altair
+            "background": "#FFFFFF",
+            # Assi
+            "axis": {
+                "labelColor": "#000000",
+                "titleColor": "#000000",
+                "domainColor": "#000000",
+                "tickColor": "#000000",
+                "gridColor": "#E5E5E5",
+                "gridOpacity": 1,
+            },
+            # Legende
+            "legend": {
+                "labelColor": "#000000",
+                "titleColor": "#000000",
+            },
+            # Titoli
+            "title": {
+                "color": "#000000",
+            },
+            # Rimuove il bordo del grafico
+            "view": {
+                "stroke": None,
+            },
+            # Palette Villa Almé
+            "range": {
+                "category": [
+                    "#D0372D",  # rosso
+                    "#F7BE00",  # giallo
+                    "#333333",
+                ]
+            },
+        }
+    }
+
+
+alt.themes.register("reports_theme", reports_theme)
+alt.themes.enable("reports_theme")
 
 
 def is_segnalato(row) -> bool:
@@ -106,7 +150,9 @@ with tab_pivot:
     tot = len(df)
     n_segnalati = int(df["Segnalato_num"].sum())
     n_nds = int(df["NDS"].sum())
-    n_partite = int(df.loc[df["Partita"].ne(""), "Partita"].nunique())
+    n_partite = len(
+        df.loc[df["Partita"].ne(""), ["Partita", "Data_Partita"]].drop_duplicates()
+    )
     n_giocatori_segnalati = int(df["Giocatore_Segnalato"].nunique())
     media = df["Voto_num"].mean()
 
