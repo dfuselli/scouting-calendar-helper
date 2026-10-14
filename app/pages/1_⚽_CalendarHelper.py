@@ -108,9 +108,9 @@ def _render_table(df_visible) -> None:
         column_config={
             "Selezionato": st.column_config.CheckboxColumn("", width=30, pinned=True),
             "Time": st.column_config.TextColumn("Data", width=80, disabled=True),
-            "Casa": st.column_config.TextColumn("Casa", width=120, disabled=True),
-            "Ospite": st.column_config.TextColumn("Ospite", width=120, disabled=True),
-            "Fascia": st.column_config.TextColumn("Fascia", width=100, disabled=True),
+            "Casa": st.column_config.TextColumn("Casa", width=110, disabled=True),
+            "Ospite": st.column_config.TextColumn("Ospite", width=110, disabled=True),
+            "Fascia": st.column_config.TextColumn("Fascia", width=140, disabled=True),
         },
     )
 
