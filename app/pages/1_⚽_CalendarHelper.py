@@ -99,7 +99,7 @@ def _render_table(df_visible) -> None:
     height = min(ROW_HEIGHT_PX * (len(df_visible) + 1), MAX_TABLE_HEIGHT_PX)
     st.data_editor(
         data=df_visible,
-        width="stretch",
+        width=400,
         height=height,
         column_order=COLUMN_ORDER,
         key="match_table",
@@ -107,10 +107,10 @@ def _render_table(df_visible) -> None:
         on_change=_handle_change,
         column_config={
             "Selezionato": st.column_config.CheckboxColumn("", width=30, pinned=True),
-            "Time": st.column_config.TextColumn("Data", width=30, disabled=True),
-            "Casa": st.column_config.TextColumn("Casa", width=50, disabled=True),
-            "Ospite": st.column_config.TextColumn("Ospite", width=50, disabled=True),
-            "Fascia": st.column_config.TextColumn("Fascia", width=10, disabled=True),
+            "Time": st.column_config.TextColumn("Data", width=80, disabled=True),
+            "Casa": st.column_config.TextColumn("Casa", width=120, disabled=True),
+            "Ospite": st.column_config.TextColumn("Ospite", width=120, disabled=True),
+            "Fascia": st.column_config.TextColumn("Fascia", width=100, disabled=True),
         },
     )
 
