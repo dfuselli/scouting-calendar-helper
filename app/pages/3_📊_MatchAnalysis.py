@@ -139,7 +139,15 @@ df = load_csv(uploaded)
 # st.write(df[["ClasseOsservatore", "Has_Staff", "Has_Responsabile", "Has_Scouting"]].drop_duplicates())
 
 
-tab_pivot, tab_grafici, tab_mappe = st.tabs(["Pivot", "Grafici", "Mappe"])
+tab_pivot, tab_pluri, tab_societa, tab_grafici, tab_mappe = st.tabs(
+    [
+        "Segnalazioni",
+        "Giocatori Pluri-Segnalati",
+        "Società visionate",
+        "Istogrammi",
+        "Mappe Geografiche",
+    ]
+)
 
 with tab_pivot:
     add_markdown_divider()
@@ -229,6 +237,224 @@ with tab_pivot:
         enable_drilldown=True,
         max_height=650,
         export_filename="incrocio_segnalazioni_alberatura",
+    )
+with tab_pluri:
+    add_markdown_divider()
+
+    seg = df.loc[
+        df["Segnalato_num"].eq(1) & df["Nome"].ne(""),
+        [
+            "Nome",
+            "Anno",
+            "Societa",
+            "Osservatore",
+            "Stato",
+            "ClasseOsservatore",
+            "Partita",
+            "Voto_num",
+            "Has_Staff",
+            "Has_Responsabile",
+            "Has_Scouting",
+        ],
+    ].copy()
+    seg["Segnalazioni"] = 1
+
+    conteggi = seg.groupby("Nome")["Segnalazioni"].transform("size")
+    pluri = seg.loc[conteggi.gt(1)].copy()
+    pluri["Segnalazioni totali"] = pluri["Nome"].map(
+        seg.groupby("Nome")["Segnalazioni"].size()
+    )
+
+    if pluri.empty:
+        st.info("Nessun giocatore pluri-segnalato nel dataset.")
+    else:
+        per_giocatore = pluri.groupby("Nome")["Segnalazioni"].size()
+        c1, c2, c3, c4, c5 = st.columns(5)
+        c1.metric("Giocatori pluri-segnalati", len(per_giocatore))
+        c2.metric("Segnalazioni totali", int(per_giocatore.sum()))
+        c3.metric("Media segnalazioni", f"{per_giocatore.mean():.2f}")
+        c4.metric("Max segnalazioni", int(per_giocatore.max()))
+        c5.metric(
+            "Voto medio",
+            f"{pluri['Voto_num'].mean():.2f}"
+            if pluri["Voto_num"].notna().any()
+            else "—",
+        )
+
+        add_markdown_divider()
+        st_pivot_table(
+            pluri,
+            key="pluri_segnalati",
+            rows=["Anno", "Nome", "Osservatore"],
+            values=[
+                "Segnalazioni",
+                "Voto_num",
+                "Has_Staff",
+                "Has_Responsabile",
+                "Has_Scouting",
+            ],
+            aggregation={
+                "Segnalazioni": "sum",
+                "Voto_num": "avg",
+                "Has_Staff": "max",
+                "Has_Responsabile": "max",
+                "Has_Scouting": "max",
+            },
+            collapse_row_groups=True,
+            row_layout="hierarchy",
+            show_subtotals=True,
+            values_axis="columns",
+            number_format={
+                "Segnalazioni": "0",
+                "Voto_num": ".2f",
+                "Has_Staff": "0",
+                "Has_Responsabile": "0",
+                "Has_Scouting": "0",
+            },
+            empty_cell_value="—",
+            style="striped",
+            column_config={
+                "Nome": {"label": "Giocatore"},
+                "Segnalazioni": {
+                    "label": "Segnalazioni",
+                    "help": "Numero di segnalazioni nel gruppo ( Nome / Anno / Osservatore )",
+                    "width": "small",
+                    "alignment": "center",
+                },
+                "Voto_num": {
+                    "label": "Voto medio",
+                    "help": "Media dei voti numerici (0.0 = segnalato senza giudizio, escluso)",
+                    "width": "medium",
+                    "alignment": "center",
+                },
+                "Has_Staff": {
+                    "label": "Staff",
+                    "help": "Almeno un osservatore Staff nel gruppo",
+                    "width": "small",
+                    "alignment": "center",
+                },
+                "Has_Responsabile": {
+                    "label": "Responsabile",
+                    "help": "Almeno un osservatore Responsabile nel gruppo",
+                    "width": "small",
+                    "alignment": "center",
+                },
+                "Has_Scouting": {
+                    "label": "Scouting",
+                    "help": "Almeno un osservatore Scouting nel gruppo",
+                    "width": "small",
+                    "alignment": "center",
+                },
+            },
+            filter_fields=[
+                "Anno",
+                "Societa",
+                "Stato",
+                "Osservatore",
+                "ClasseOsservatore",
+                "Partita",
+            ],
+            enable_drilldown=True,
+            max_height=650,
+            export_filename="incrocio_pluri_segnalati",
+        )
+
+with tab_societa:
+    add_markdown_divider()
+
+    ANNI = [str(a) for a in range(2010, 2020)]
+
+    visioni = df.loc[
+        df["Societa"].ne("") & df["Osservatore"].ne(""),
+        ["Societa", "Osservatore", "Anno", "Partita", "Nome", "Segnalato_num"],
+    ]
+
+    partite_oss = (
+        visioni.loc[visioni["Partita"].ne("")]
+        .drop_duplicates(subset=["Societa", "Osservatore", "Anno", "Partita"])
+        .groupby(["Societa", "Osservatore", "Anno"])
+        .size()
+        .reset_index(name="count")
+    )
+
+    wide = partite_oss.pivot(
+        index=["Societa", "Osservatore"], columns="Anno", values="count"
+    ).reindex(columns=ANNI)
+    wide = wide.fillna(0).astype(int)
+
+    df_societa = wide.reset_index()
+    df_societa["Partite totali"] = df_societa[ANNI].sum(axis=1)
+
+    gioc_segn = (
+        visioni.loc[visioni["Segnalato_num"].eq(1) & visioni["Nome"].ne("")]
+        .groupby(["Societa", "Osservatore"])["Nome"]
+        .nunique()
+        .reset_index(name="Giocatori segnalati")
+    )
+    df_societa = df_societa.merge(gioc_segn, on=["Societa", "Osservatore"], how="left")
+    df_societa["Giocatori segnalati"] = (
+        df_societa["Giocatori segnalati"].fillna(0).astype(int)
+    )
+    df_societa = df_societa.sort_values(["Societa", "Osservatore"]).reset_index(
+        drop=True
+    )
+
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Società visionate", df_societa["Societa"].nunique())
+    c2.metric("Osservatori attivi", df_societa["Osservatore"].nunique())
+    c3.metric("Partite totali", int(df_societa["Partite totali"].sum()))
+    c4.metric("Giocatori segnalati", int(df_societa["Giocatori segnalati"].sum()))
+
+    add_markdown_divider()
+    st_pivot_table(
+        df_societa,
+        key="societa_visionate",
+        rows=["Societa", "Osservatore"],
+        values=ANNI + ["Partite totali", "Giocatori segnalati"],
+        aggregation={
+            **{a: "sum" for a in ANNI},
+            "Partite totali": "sum",
+            "Giocatori segnalati": "sum",
+        },
+        collapse_row_groups=True,
+        row_layout="hierarchy",
+        show_subtotals=True,
+        values_axis="columns",
+        number_format={
+            **{a: "0" for a in ANNI},
+            "Partite totali": "0",
+            "Giocatori segnalati": "0",
+        },
+        empty_cell_value="—",
+        style="striped",
+        column_config={
+            "Societa": {"label": "Società"},
+            **{
+                a: {
+                    "label": a,
+                    "help": f"Partite visionate nell'annata {a}",
+                    "width": "small",
+                    "alignment": "center",
+                }
+                for a in ANNI
+            },
+            "Partite totali": {
+                "label": "Partite totali",
+                "help": "Partite visionate totali (2010–2019)",
+                "width": "small",
+                "alignment": "center",
+            },
+            "Giocatori segnalati": {
+                "label": "Giocatori segnalati",
+                "help": "Giocatori distinti segnalati per questa coppia Società / Osservatore",
+                "width": "medium",
+                "alignment": "center",
+            },
+        },
+        filter_fields=["Societa", "Osservatore"],
+        enable_drilldown=True,
+        max_height=650,
+        export_filename="incrocio_societa_visionate",
     )
 
 with tab_grafici:
